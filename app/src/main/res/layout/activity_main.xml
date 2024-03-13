@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="showWeb"
+            type="Boolean"
+            android:value="false" />
+
+        <variable
+            name="showMenu"
+            type="Boolean"
+            android:value="false" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_main">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/con_home"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:visibility="@{showWeb ? View.GONE : View.VISIBLE}"
+            app:layout_constraintBottom_toTopOf="@+id/linearLayout3"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraintLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/icon_service_bg"
+                android:paddingHorizontal="24dp"
+                android:paddingTop="39dp"
+                android:paddingBottom="19dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/img_flag"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/icon_fast"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+                <LinearLayout
+                    android:id="@+id/linearLayout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:orientation="vertical"
+                    app:layout_constraintBottom_toBottomOf="@+id/img_flag"
+                    app:layout_constraintStart_toEndOf="@+id/img_flag"
+                    app:layout_constraintTop_toTopOf="@+id/img_flag">
+
+                    <TextView
+                        android:id="@+id/tv_country"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Smart Sever"
+                        android:textColor="#FFCAFFFF"
+                        android:textSize="17sp" />
+
+                    <TextView
+                        android:id="@+id/tv_country_code"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Go get Faster locations"
+                        android:textColor="#73FFFFFF"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/icon_be"
+                    app:layout_constraintBottom_toBottomOf="@+id/img_flag"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/img_flag" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="60dp"
+                android:fontFamily="@font/saf"
+                android:text="@string/app_name"
+                android:textColor="#FFFFFFFF"
+                android:textSize="44sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/saf"
+                android:text="Browser"
+                android:textColor="#FFFFFFFF"
+                android:textSize="19sp"
+                app:layout_constraintEnd_toEndOf="@+id/textView2"
+                app:layout_constraintStart_toStartOf="@+id/textView2"
+                app:layout_constraintTop_toBottomOf="@+id/textView2" />
+
+            <LinearLayout
+                android:id="@+id/linearLayout2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginTop="33dp"
+                android:background="@drawable/bg_search"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="19dp"
+                android:paddingVertical="15dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView3">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/icon_ser" />
+
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/edt_search"
+                    android:layout_width="0dp"
+                    android:layout_height="37dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:hint="Search..."
+                    android:imeOptions="actionSearch"
+                    android:singleLine="true"
+                    android:textColor="@color/white"
+                    android:textColorHint="#AEB5CE"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_instagram"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="28dp"
+                android:layout_marginTop="42dp"
+                android:drawableTop="@drawable/icon_ins"
+                android:drawablePadding="16sp"
+                android:text="Instagram"
+                android:textColor="#FFAEB5CE"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_vimor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="42dp"
+                android:drawableTop="@drawable/icon_ver"
+                android:drawablePadding="16sp"
+                android:text="Instagram"
+                android:textColor="#FFAEB5CE"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toStartOf="@+id/tv_tiktok"
+                app:layout_constraintStart_toEndOf="@+id/tv_instagram"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_tiktok"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="42dp"
+                android:drawableTop="@drawable/icon_tt"
+                android:drawablePadding="16sp"
+                android:text="Instagram"
+                android:textColor="#FFAEB5CE"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toStartOf="@+id/tv_fb"
+                app:layout_constraintStart_toEndOf="@+id/tv_vimor"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_fb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="42dp"
+                android:drawableTop="@drawable/icon_fb"
+                android:drawablePadding="16sp"
+                android:text="Instagram"
+                android:textColor="#FFAEB5CE"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/tv_tiktok"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/con_web"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:visibility="@{showWeb ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toTopOf="@+id/linearLayout3"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <LinearLayout
+                android:id="@+id/ll_web_search"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/bg_search"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="20dp"
+                android:paddingVertical="15dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/icon_ser" />
+
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/edt_search_web"
+                    android:layout_width="0dp"
+                    android:layout_height="37dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:hint="Search..."
+                    android:textColor="@color/white"
+                    android:textColorHint="#AEB5CE"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <WebView
+                android:id="@+id/home_web"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="6dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ll_web_search" />
+
+            <ProgressBar
+                android:id="@+id/progressBar_loading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <LinearLayout
+            android:id="@+id/linearLayout3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingVertical="17dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <ImageView
+                android:id="@+id/img_left"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:scaleType="centerInside"
+                android:src="@drawable/icon_left_2" />
+
+            <ImageView
+                android:id="@+id/img_right"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:scaleType="centerInside"
+                android:src="@drawable/icon_right_2" />
+
+            <ImageView
+                android:id="@+id/img_home"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:scaleType="centerInside"
+                android:src="@drawable/icon_home" />
+
+            <ImageView
+                android:id="@+id/img_menu"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:scaleType="centerInside"
+                android:src="@drawable/icon_menu" />
+
+            <ImageView
+                android:id="@+id/img_vpn"
+                android:layout_width="0dp"
+                android:layout_height="27dp"
+                android:layout_weight="1"
+                android:scaleType="centerInside"
+                android:src="@drawable/icon_fast" />
+        </LinearLayout>
+
+        <View
+            android:id="@+id/view_menu_bg"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#9920263A"
+            android:visibility="@{showMenu ? View.VISIBLE : View.GONE}" />
+
+        <LinearLayout
+            android:id="@+id/ll_menu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:background="@drawable/bg_menu"
+            android:orientation="horizontal"
+            android:paddingVertical="28dp"
+            android:visibility="@{showMenu ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toTopOf="@+id/linearLayout3"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_reload"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:drawableTop="@drawable/icon_reload"
+                android:gravity="center"
+                android:text="Reload"
+                android:textColor="#FFAEB5CE"
+                android:textSize="11sp"
+                android:visibility="@{showWeb ? View.VISIBLE : View.GONE}" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_history"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:drawableTop="@drawable/icon_history"
+                android:gravity="center"
+                android:text="History"
+                android:textColor="#FFAEB5CE"
+                android:textSize="11sp" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_add"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:drawableTop="@drawable/icon_add"
+                android:gravity="center"
+                android:text="Add Mark"
+                android:textColor="#FFAEB5CE"
+                android:textSize="11sp"
+                android:visibility="@{showWeb? View.VISIBLE : View.GONE}" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_bookmark"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:drawableTop="@drawable/icon_bookmark"
+                android:gravity="center"
+                android:text="Bookmark"
+                android:textColor="#FFAEB5CE"
+                android:textSize="11sp" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_private"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:drawableTop="@drawable/icon_private"
+                android:gravity="center"
+                android:text="Private"
+                android:textColor="#FFAEB5CE"
+                android:textSize="11sp" />
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
