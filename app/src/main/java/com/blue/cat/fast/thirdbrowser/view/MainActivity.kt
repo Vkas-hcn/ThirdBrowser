@@ -1,7 +1,10 @@
 package com.blue.cat.fast.thirdbrowser.view
 
 import android.annotation.SuppressLint
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.graphics.Bitmap
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
@@ -13,6 +16,7 @@ import android.view.inputmethod.EditorInfo
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.activity.addCallback
 import com.blue.cat.fast.thirdbrowser.R
@@ -20,12 +24,16 @@ import com.blue.cat.fast.thirdbrowser.databinding.ActivityMainBinding
 import com.blue.cat.fast.thirdbrowser.utils.BVDataUtils
 import com.blue.cat.fast.thirdbrowser.utils.BrowserDataBean
 import com.blue.cat.fast.thirdbrowser.utils.BrowserKey
+import com.blue.cat.fast.thirdbrowser.utils.BrowserServiceBean
+import com.google.gson.Gson
 
 class MainActivity : AppCompatActivity() {
     val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     private var loadUrl = ""
     private var webTitle: String = ""
     private var webUrl: String = ""
+    private lateinit var webView: WebView
+    private lateinit var finishReceiver: BroadcastReceiver
 
     companion object {
         private var isHistory = false
@@ -47,16 +55,36 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         loadUrl = intent.getStringExtra("url") ?: ""
+        Log.e("TAG", "onCreate: ${loadUrl}")
         clickFun()
         initWeb()
         initEditText()
         onBackFun()
+        // 注册接收器
+        finishReceiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent?) {
+                // 结束当前Activity
+                finish()
+            }
+        }
+        registerReceiver(finishReceiver, IntentFilter("ACTION_FINISH_ACTIVITY"))
+
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterReceiver(finishReceiver)
     }
 
     private fun onBackFun() {
         onBackPressedDispatcher.addCallback(this) {
+            if (canGoBack()) {
+                webView.goBack()
+                return@addCallback
+            }
             if (binding.showWeb == true) {
-                binding.showWeb = false
+                loadUrl = ""
+                initWeb()
             } else {
                 finish()
             }
@@ -69,19 +97,19 @@ class MainActivity : AppCompatActivity() {
         }
         binding.tvInstagram.setOnClickListener {
             binding.showWeb = true
-            binding.homeWeb.loadUrl("https://www.instagram.com")
+            webView.loadUrl("https://www.instagram.com")
         }
         binding.tvVimor.setOnClickListener {
             binding.showWeb = true
-            binding.homeWeb.loadUrl("https://www.vimor.com")
+            webView.loadUrl("https://vimeo.com/")
         }
         binding.tvFb.setOnClickListener {
             binding.showWeb = true
-            binding.homeWeb.loadUrl("https://www.facebook.com")
+            webView.loadUrl("https://www.facebook.com")
         }
         binding.tvTiktok.setOnClickListener {
             binding.showWeb = true
-            binding.homeWeb.loadUrl("https://www.tiktok.com")
+            webView.loadUrl("https://www.tiktok.com")
         }
         binding.imgLeft.setOnClickListener {
             goBack()
@@ -90,7 +118,8 @@ class MainActivity : AppCompatActivity() {
             goForward()
         }
         binding.imgHome.setOnClickListener {
-            binding.showWeb = false
+            loadUrl = ""
+            initWeb()
         }
         binding.imgMenu.setOnClickListener {
             binding.showMenu = true
@@ -99,7 +128,7 @@ class MainActivity : AppCompatActivity() {
             binding.showMenu = false
         }
         binding.tvReload.setOnClickListener {
-            binding.homeWeb.reload()
+            webView.reload()
             binding.showMenu = false
         }
         binding.tvHistory.setOnClickListener {
@@ -126,13 +155,29 @@ class MainActivity : AppCompatActivity() {
             }
             binding.showMenu = false
         }
+        binding.imgVpn.setOnClickListener {
+            VpnActivity.start(this)
+        }
     }
 
     @SuppressLint("SetJavaScriptEnabled")
     private fun initWeb() {
+        binding.imgLeft.setImageResource(R.drawable.icon_left_2)
+        binding.imgRight.setImageResource(R.drawable.icon_right_2)
+        binding.homeWeb.removeAllViews()
+        webView = WebView(this).apply {
+            layoutParams = FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT
+            )
+            settings.javaScriptEnabled = true
+        }
+
+        binding.homeWeb.addView(webView)
         binding.showWeb = false
-        binding.homeWeb.settings.javaScriptEnabled = true
-        binding.homeWeb.webViewClient = object : WebViewClient() {
+        webView.settings.javaScriptEnabled = true
+
+        webView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
                 if (loadUrl == url) {
                     view.loadUrl(url)
@@ -145,6 +190,7 @@ class MainActivity : AppCompatActivity() {
             override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                 webUrl = url.toString()
                 binding.progressBarLoading.visibility = View.VISIBLE
+                setGoOrBackIcon(binding)
             }
 
             override fun onPageFinished(view: WebView?, url: String?) {
@@ -152,7 +198,7 @@ class MainActivity : AppCompatActivity() {
                 binding.progressBarLoading.visibility = View.GONE
             }
         }
-        binding.homeWeb.webChromeClient = object : WebChromeClient() {
+        webView.webChromeClient = object : WebChromeClient() {
             override fun onReceivedTitle(view: WebView?, title: String?) {
                 super.onReceivedTitle(view, title)
                 webTitle = title.toString()
@@ -165,17 +211,17 @@ class MainActivity : AppCompatActivity() {
         }
         if (loadUrl.isNotEmpty()) {
             binding.showWeb = true
-            binding.homeWeb.loadUrl(loadUrl)
+            webView.loadUrl(loadUrl)
         }
     }
 
     fun setGoOrBackIcon(binding: ActivityMainBinding) {
-        if (canGoBack()) {
+        if (canGoBack() && binding.showWeb == true) {
             binding.imgLeft.setImageResource(R.drawable.icon_left_1)
         } else {
             binding.imgLeft.setImageResource(R.drawable.icon_left_2)
         }
-        if (canGoForward()) {
+        if (canGoForward() && binding.showWeb == true) {
             binding.imgRight.setImageResource(R.drawable.icon_right_1)
         } else {
             binding.imgRight.setImageResource(R.drawable.icon_right_2)
@@ -183,8 +229,20 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun searchGoogle(data: String): String {
-        return "https://www.baidu.com/s?wd=${data}"
+        val urlPattern =
+            "^(http://www\\.|https://www\\.|http://|https://)?[a-z0-9]+([\\-\\.]{1}[a-z0-9]+)*\\.[a-z]{2,5}(:[0-9]{1,5})?(/.*)?$".toRegex()
+
+        return if (urlPattern.matches(data)) {
+            if (data.startsWith("http://") || data.startsWith("https://")) {
+                data
+            } else {
+                "https://$data"
+            }
+        } else {
+            "https://www.google.com/search?q=${data.replace(" ", "+")}"
+        }
     }
+
 
     private fun initEditText() {
         binding.edtSearch.setOnEditorActionListener { v, actionId, event ->
@@ -193,7 +251,7 @@ class MainActivity : AppCompatActivity() {
             ) {
                 if (binding.edtSearch.text.toString().trim().isNotEmpty()) {
                     binding.showWeb = true
-                    binding.homeWeb.loadUrl(searchGoogle(binding.edtSearch.text.toString()))
+                    webView.loadUrl(searchGoogle(binding.edtSearch.text.toString()))
                     binding.edtSearch.text?.clear()
                     BVDataUtils.closeKeyboard(binding.edtSearch, this)
                 }
@@ -209,7 +267,7 @@ class MainActivity : AppCompatActivity() {
             ) {
                 if (binding.edtSearchWeb.text.toString().trim().isNotEmpty()) {
                     binding.showWeb = true
-                    binding.homeWeb.loadUrl(searchGoogle(binding.edtSearchWeb.text.toString()))
+                    webView.loadUrl(searchGoogle(binding.edtSearchWeb.text.toString()))
                     binding.edtSearchWeb.text?.clear()
                     BVDataUtils.closeKeyboard(binding.edtSearchWeb, this)
                 }
@@ -221,22 +279,35 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun canGoBack(): Boolean {
-        return binding.homeWeb.canGoBack()
+        return webView.canGoBack()
     }
 
     private fun canGoForward(): Boolean {
-        return binding.homeWeb.canGoForward()
+        return webView.canGoForward()
     }
 
     private fun goBack() {
         if (canGoBack()) {
-            binding.homeWeb.goBack()
+            webView.goBack()
         }
     }
 
     private fun goForward() {
         if (canGoForward()) {
-            binding.homeWeb.goForward()
+            webView.goForward()
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val bean = runCatching {
+            Gson().fromJson(
+                BrowserKey.connectVpn,
+                BrowserServiceBean::class.java
+            )
+        }.getOrNull()
+        binding.imgVpn.setImageResource(BVDataUtils.getImageFlag(bean?.country ?: ""))
+        binding.imgFlag.setImageResource(BVDataUtils.getImageFlag(bean?.country ?: ""))
+        binding.tvCountry.text = bean?.country ?: "Smart Sever"
     }
 }

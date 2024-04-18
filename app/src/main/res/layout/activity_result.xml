@@ -4,9 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <import type="android.view.View" />
+
         <variable
-            name="haveData"
+            name="haveConnect"
             type="Boolean"
             android:value="false" />
     </data>
@@ -42,7 +44,7 @@
             android:id="@+id/img_service_state"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/icon_result_connect"
+            android:src="@{haveConnect?@drawable/icon_result_connect:@drawable/icon_result_disconnect}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_title" />
@@ -51,7 +53,7 @@
             android:id="@+id/linearLayout5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_result_service"
+            android:background="@{haveConnect?@drawable/bg_result_service:@drawable/bg_disconnect_result}"
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:paddingHorizontal="12dp"
@@ -85,7 +87,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="19dp"
             android:fontFamily="@font/poppins"
-            android:text="Connected succeeded"
+            android:text="@{haveConnect?`Connected succeeded`:`Disconnected succeeded`}"
             android:textColor="#FFFFFFFF"
             android:textSize="17sp"
             app:layout_constraintEnd_toEndOf="parent"

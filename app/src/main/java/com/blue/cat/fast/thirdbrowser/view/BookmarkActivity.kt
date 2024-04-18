@@ -44,6 +44,7 @@ class BookmarkActivity : AppCompatActivity() {
             ?.sortedByDescending { it.timeDate }
             ?.toMutableList()
         binding.haveData = data == null
+        allBookmarkBeanData = mutableListOf()
         if (data != null) {
             allBookmarkBeanData = data
             adapter = BrowserDataAdapter(allBookmarkBeanData)
@@ -54,18 +55,22 @@ class BookmarkActivity : AppCompatActivity() {
             adapter.setOnItemClickListener(object : BrowserDataAdapter.OnItemClickListener {
                 override fun onItemClick(position: Int) {
                     val data = allBookmarkBeanData[position].urlData
-                    MainActivity.loadWeb(this@BookmarkActivity, data,false)
+                    killTargetActivity()
+                    MainActivity.loadWeb(this@BookmarkActivity, data, false)
                 }
             })
             adapter.setOnItemDeleteListener(object : BrowserDataAdapter.OnItemDeleteListener {
                 override fun onItemDelete(position: Int) {
-                    adapter.deleteData(position,false)
+                    adapter.deleteData(position, false)
                     binding.haveData = allBookmarkBeanData.isEmpty()
                 }
             })
         }
     }
-
+    fun killTargetActivity() {
+        val intent = Intent("ACTION_FINISH_ACTIVITY")
+        sendBroadcast(intent)
+    }
     private fun editSearchFun() {
         binding.edtSearchBookmark.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -75,13 +80,15 @@ class BookmarkActivity : AppCompatActivity() {
             }
 
             override fun afterTextChanged(s: Editable?) {
-                allBookmarkBeanData.forEach { all ->
-                    all.haveShow = !((all.urlTitle).lowercase(Locale.getDefault()).contains(
-                        s.toString()
-                            .lowercase(Locale.getDefault())
-                    ))
+                if (allBookmarkBeanData.isNotEmpty()) {
+                    allBookmarkBeanData.forEach { all ->
+                        all.haveShow = !((all.urlTitle).lowercase(Locale.getDefault()).contains(
+                            s.toString()
+                                .lowercase(Locale.getDefault())
+                        ))
+                    }
+                    showNoData()
                 }
-                showNoData()
             }
         })
     }

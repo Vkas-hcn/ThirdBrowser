@@ -3,6 +3,7 @@
     <style name="Base.Theme.ThirdBrowser" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="colorAccent">#00BCD4</item>
     </style>
 
     <style name="Theme.ThirdBrowser" parent="Base.Theme.ThirdBrowser" />

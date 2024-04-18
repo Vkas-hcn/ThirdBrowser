@@ -7,19 +7,35 @@ import com.blue.cat.fast.thirdbrowser.databinding.ActivityGuideBinding
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import android.animation.ObjectAnimator
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.addCallback
+import com.blue.cat.fast.thirdbrowser.utils.NetUtils
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+
 class GuideActivity : AppCompatActivity() {
     val binding by lazy { ActivityGuideBinding.inflate(layoutInflater) }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         lifecycleScope.launch {
+            withContext(Dispatchers.IO){
+                NetUtils.getOnLineServiceData()
+                NetUtils.getIpDataInfo()
+                NetUtils.getRecordNetData(this@GuideActivity)
+            }
             rotateImage(binding.imageLoad)
             delay(2000)
             MainActivity.start(this@GuideActivity)
             stopRotation(binding.imageLoad)
         }
+        onBackPressedDispatcher.addCallback(this,object :OnBackPressedCallback(true){
+            override fun handleOnBackPressed() {
+            }
+        })
     }
 
 

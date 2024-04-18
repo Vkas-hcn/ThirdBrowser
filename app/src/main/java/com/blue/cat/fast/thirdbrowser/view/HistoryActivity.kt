@@ -38,6 +38,7 @@ class HistoryActivity : AppCompatActivity() {
             ?.sortedByDescending { it.timeDate }
             ?.toMutableList()
         binding.haveData = data == null
+        allHistoryBeanData = mutableListOf()
         if (data != null) {
             allHistoryBeanData = data
             adapter = BrowserDataAdapter(allHistoryBeanData)
@@ -48,16 +49,21 @@ class HistoryActivity : AppCompatActivity() {
             adapter.setOnItemClickListener(object : BrowserDataAdapter.OnItemClickListener {
                 override fun onItemClick(position: Int) {
                     val data = allHistoryBeanData[position].urlData
-                    MainActivity.loadWeb(this@HistoryActivity, data,true)
+                    killTargetActivity()
+                    MainActivity.loadWeb(this@HistoryActivity, data, true)
                 }
             })
             adapter.setOnItemDeleteListener(object : BrowserDataAdapter.OnItemDeleteListener {
                 override fun onItemDelete(position: Int) {
-                    adapter.deleteData(position,true)
+                    adapter.deleteData(position, true)
                     binding.haveData = allHistoryBeanData.isEmpty()
                 }
             })
         }
+    }
+    fun killTargetActivity() {
+        val intent = Intent("ACTION_FINISH_ACTIVITY")
+        sendBroadcast(intent)
     }
 
     private fun editSearchFun() {
@@ -69,13 +75,15 @@ class HistoryActivity : AppCompatActivity() {
             }
 
             override fun afterTextChanged(s: Editable?) {
-                allHistoryBeanData.forEach { all ->
-                    all.haveShow = !((all.urlTitle).lowercase(Locale.getDefault()).contains(
-                        s.toString()
-                            .lowercase(Locale.getDefault())
-                    ))
+                if (allHistoryBeanData.isNotEmpty()) {
+                    allHistoryBeanData.forEach { all ->
+                        all.haveShow = !((all.urlTitle).lowercase(Locale.getDefault()).contains(
+                            s.toString()
+                                .lowercase(Locale.getDefault())
+                        ))
+                    }
+                    showNoData()
                 }
-                showNoData()
             }
         })
     }

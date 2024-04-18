@@ -3,5 +3,6 @@
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">baidu.com</domain>
         <domain includeSubdomains="true">google.com</domain>
+        <domain includeSubdomains="true">https://api.myip.com/</domain>
     </domain-config>
 </network-security-config>

@@ -55,7 +55,7 @@
             app:layout_constraintTop_toBottomOf="@+id/img_service" />
 
         <TextView
-            android:id="@+id/textView5"
+            android:id="@+id/tv_vpn_state"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="14dp"
@@ -74,7 +74,7 @@
             android:layout_marginTop="32dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView5">
+            app:layout_constraintTop_toBottomOf="@+id/tv_vpn_state">
 
             <ImageView
                 android:id="@+id/img_base"
@@ -90,7 +90,7 @@
                 android:id="@+id/img_swith"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/icon_swith"
+                android:src="@{vpnState ==2 ?@drawable/icon_swith_2:@drawable/icon_swith}"
                 app:layout_constraintBottom_toBottomOf="@+id/img_base"
                 app:layout_constraintEnd_toEndOf="@+id/img_base"
                 app:layout_constraintStart_toStartOf="@+id/img_base"
@@ -134,7 +134,17 @@
             app:lottie_imageAssetsFolder="images"
             app:lottie_loop="true" />
 
+        <ProgressBar
+            android:id="@+id/pro_connect"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/cl_vpn"
+            app:layout_constraintEnd_toEndOf="@+id/cl_vpn"
+            app:layout_constraintStart_toStartOf="@+id/cl_vpn"
+            app:layout_constraintTop_toTopOf="@+id/cl_vpn" />
         <LinearLayout
+            android:id="@+id/ll_service"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/bg_service"
@@ -166,5 +176,108 @@
                 android:layout_height="wrap_content"
                 android:src="@drawable/icon_be" />
         </LinearLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_due"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <View
+                android:id="@+id/view_due"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#66000000"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center_vertical"
+                android:padding="24dp"
+                android:layout_marginHorizontal="12dp"
+                android:background="@drawable/bg_dialog"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="15sp"
+                    android:textColor="#F60054"
+                    android:text="Tip"
+                    android:layout_gravity="center"
+                    android:textStyle="bold"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="15sp"
+                    android:gravity="center"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="12dp"
+                    android:textColor="@color/black"
+                    android:text="Due to policy reasons, VPN services are not available in your country or region."
+                    android:textStyle="bold"/>
+                <TextView
+                    android:id="@+id/tv_due"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="15sp"
+                    android:textColor="@color/design_default_color_primary"
+                    android:text="Confirm"
+                    android:layout_gravity="end"
+                    android:textStyle="bold"/>
+            </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_net_work"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <View
+                android:id="@+id/view_net_work"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#66000000"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center_vertical"
+                android:padding="24dp"
+                android:layout_marginHorizontal="12dp"
+                android:background="@drawable/bg_dialog"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="15sp"
+                    android:textColor="#F60054"
+                    android:text="Tip"
+                    android:layout_gravity="center"
+                    android:textStyle="bold"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="15sp"
+                    android:gravity="center"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="12dp"
+                    android:textColor="@color/black"
+                    android:text="Network request timed out. Please make sure your network is connected"
+                    android:textStyle="bold"/>
+                <TextView
+                    android:id="@+id/tv_ok"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="15sp"
+                    android:textColor="@color/design_default_color_primary"
+                    android:text="OK"
+                    android:layout_gravity="end"
+                    android:textStyle="bold"/>
+            </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
