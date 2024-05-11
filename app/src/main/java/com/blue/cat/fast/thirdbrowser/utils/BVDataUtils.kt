@@ -13,6 +13,7 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 import android.util.Log
+import com.blue.cat.fast.thirdbrowser.App
 import com.blue.cat.fast.thirdbrowser.R
 import com.blue.cat.fast.thirdbrowser.utils.data.CoffeBean
 import com.blue.cat.fast.thirdbrowser.utils.data.FieryAdBean
@@ -247,29 +248,29 @@ object BVDataUtils {
     fun getAdJson(): FieryAdBean {
         val dataJson = BrowserKey.fileBase_ad_data.let {
             it.ifEmpty {
-                BrowserKey.fiery_ad_data
+                BrowserKey.loadJSONFromAsset(App.instance,BrowserKey.fiery_ad_data)
             }
         }
         return try {
             Gson().fromJson(dataJson, object : TypeToken<FieryAdBean>() {}.type)
         } catch (e: Exception) {
             Gson().fromJson(
-                BrowserKey.fiery_ad_data,
+                BrowserKey.loadJSONFromAsset(App.instance,BrowserKey.fiery_ad_data),
                 object : TypeToken<FieryAdBean>() {}.type
             )
         }
     }
-    fun getCoffeJson(): CoffeBean {
+    private fun getCoffeJson(): CoffeBean {
         val dataJson = BrowserKey.fileBase_coffe_data.let {
             it.ifEmpty {
-                BrowserKey.coffe
+                BrowserKey.loadJSONFromAsset(App.instance,BrowserKey.coffe)
             }
         }
         return try {
             Gson().fromJson(dataJson, object : TypeToken<CoffeBean>() {}.type)
         } catch (e: Exception) {
             Gson().fromJson(
-                BrowserKey.coffe,
+                BrowserKey.loadJSONFromAsset(App.instance,BrowserKey.coffe),
                 object : TypeToken<CoffeBean>() {}.type
             )
         }

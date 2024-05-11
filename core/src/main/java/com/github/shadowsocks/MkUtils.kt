@@ -12,7 +12,7 @@ object MkUtils {
     val sharedPrefs = Core.app.getSharedPreferences("browser_dog", Context.MODE_PRIVATE)
 
     private fun getFlowData(): Boolean {
-        val value = sharedPrefs.getBoolean("rl_data_fiery", false)
+        val value = sharedPrefs.getBoolean("rl_data_fiery", true)
         Log.e("TAG", "getAroundFlowJsonData-ss: ${value}")
         return value
     }

@@ -60,7 +60,7 @@ class GuideActivity : AppCompatActivity() {
             }
         }
         showOpenAdLive.observe(this) {
-            showOpenAd(it)
+                showOpenAd(it)
         }
     }
 
@@ -75,7 +75,13 @@ class GuideActivity : AppCompatActivity() {
                 Guide2Activity.start(this@GuideActivity)
             }
         } else {
-            finish()
+            Log.e("TAG", "jumpToNextPage1: ${App.isActivityInStack(MainActivity().javaClass.name)}")
+            Log.e("TAG", "jumpToNextPage2: ${App.isActivityInStack(this.javaClass.name)}")
+            if(App.isActivityInStack(MainActivity().javaClass.name)){
+                finish()
+            }else{
+                MainActivity.start(this)
+            }
         }
     }
 
@@ -130,11 +136,12 @@ class GuideActivity : AppCompatActivity() {
                             break
                         }
                         if (FieryAdMob.resultOf(BrowserKey.Fiery_OPEN) != null) {
-                            Log.e("TAG", "loadOpenAd: show")
                             FieryAdMob.resultOf(BrowserKey.Fiery_OPEN)
                                 ?.let {
-                                    isJump = false
-                                    showOpenAdLive.postValue(it)
+                                    if(App.isAppInBackground.not()){
+                                        isJump = false
+                                        showOpenAdLive.postValue(it)
+                                    }
                                 }
                             break
                         }
@@ -144,9 +151,7 @@ class GuideActivity : AppCompatActivity() {
             } finally {
                 openJob?.cancel()
                 openJob = null
-                Log.e("TAG", "loadOpenAd: finally1")
-                if (isJump) {
-                    Log.e("TAG", "loadOpenAd: finally2")
+                if (isJump && App.isAppInBackground.not()) {
                     skipToTheNextPage.postValue(true)
                 }
             }
@@ -154,6 +159,7 @@ class GuideActivity : AppCompatActivity() {
     }
 
     private fun showOpenAd(openData: Any) {
+        Log.e("TAG", "loadOpenAd: show")
         FieryAdMob.showFullScreenOf(
             where = BrowserKey.Fiery_OPEN,
             context = this,

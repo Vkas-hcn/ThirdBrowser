@@ -286,7 +286,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun initEditText() {
         binding.edtSearch.setOnEditorActionListener { v, actionId, event ->
-            if (actionId == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN) {
+            if (actionId == EditorInfo.IME_ACTION_DONE ||
+                (event != null && event.keyCode == KeyEvent.KEYCODE_ENTER)
+            ) {
                 val searchText = binding.edtSearch.text.toString().trim()
                 if (searchText.isNotEmpty()) {
                     Log.e("TAG", "initEditText: 1")
@@ -369,7 +371,7 @@ class MainActivity : AppCompatActivity() {
             try {
                 withTimeout(4000) {
                     while (isActive) {
-                        if(BVDataUtils.showAdBlacklist()){
+                        if (BVDataUtils.showAdBlacklist()) {
                             isJump = true
                             break
                         }

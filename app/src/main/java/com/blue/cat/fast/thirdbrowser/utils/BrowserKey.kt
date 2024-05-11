@@ -8,6 +8,9 @@ import android.provider.Settings
 import com.blue.cat.fast.thirdbrowser.App
 import com.blue.cat.fast.thirdbrowser.utils.BVDataUtils.getAdJson
 import org.json.JSONObject
+import java.io.IOException
+import java.io.InputStream
+import java.nio.charset.Charset
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -371,49 +374,24 @@ object BrowserKey {
         return false
     }
 
-    const val fiery_ad_data = """
-        {
-    "open": [
-        {
-            "lv_fiery": "1",
-            "unit_fiery": "ca-app-pub-3940256099942544/9257395921",
-            "where_fiery": "open",
-            "type_fiery": "open"
+    const val fiery_ad_data = "fiery_ad_data.json"
+    const val coffe = "coffe.json"
+
+
+
+    fun loadJSONFromAsset(context: Context, fileName: String): String? {
+        var json: String? = null
+        try {
+            val inputStream: InputStream = context.assets.open(fileName)
+            val size: Int = inputStream.available()
+            val buffer = ByteArray(size)
+            inputStream.read(buffer)
+            inputStream.close()
+            json = String(buffer, Charset.forName("UTF-8"))
+        } catch (ex: IOException) {
+            ex.printStackTrace()
+            return null
         }
-    ],
-    "addInt": [
-        {
-            "lv_fiery": "1",
-            "unit_fiery": "ca-app-pub-3940256099942544/8691691433",
-            "where_fiery": "addInt",
-            "type_fiery": "interstitial"
-        }
-    ],
-    "connectInt": [
-        {
-            "lv_fiery": "1",
-            "unit_fiery": "ca-app-pub-3940256099942544/1033173712",
-            "where_fiery": "connectInt",
-            "type_fiery": "interstitial"
-        }
-    ],
-    "backInt": [
-        {
-            "lv_fiery": "1",
-            "unit_fiery": "ca-app-pub-3940256099942544/1033173712",
-            "where_fiery": "backInt",
-            "type_fiery": "Interstitial"
-        }
-    ],
-    "ccc": 2,
-    "sss": 20
-}
-    """
-    const val coffe = """
-        {
-    "sto": "1",
-    "vis": "1",
-    "act": "10#3#2#2"
-}
-    """
+        return json
+    }
 }

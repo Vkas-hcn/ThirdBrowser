@@ -1,0 +1,36 @@
+{
+  "open_open": [
+    {
+      "lv_fiery": "1",
+      "unit_fiery": "ca-app-pub-3940256099942544/9257395921",
+      "where_fiery": "open",
+      "type_fiery": "open"
+    }
+  ],
+  "add_int": [
+    {
+      "lv_fiery": "1",
+      "unit_fiery": "ca-app-pub-3940256099942544/8691691433",
+      "where_fiery": "addInt",
+      "type_fiery": "interstitial"
+    }
+  ],
+  "connect_int": [
+    {
+      "lv_fiery": "1",
+      "unit_fiery": "ca-app-pub-3940256099942544/1033173712",
+      "where_fiery": "connectInt",
+      "type_fiery": "interstitial"
+    }
+  ],
+  "back_int": [
+    {
+      "lv_fiery": "1",
+      "unit_fiery": "ca-app-pub-3940256099942544/1033173712",
+      "where_fiery": "backInt",
+      "type_fiery": "Interstitial"
+    }
+  ],
+  "ccc": 5,
+  "sss": 20
+}

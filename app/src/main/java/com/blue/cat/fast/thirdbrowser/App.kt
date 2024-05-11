@@ -13,11 +13,15 @@ import com.blue.cat.fast.thirdbrowser.view.GuideActivity
 import com.blue.cat.fast.thirdbrowser.view.VpnActivity
 import com.github.shadowsocks.Core
 import com.google.android.gms.ads.AdActivity
+import com.google.firebase.FirebaseApp
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.ktx.initialize
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.util.UUID
 
 class App : Application() {
+
     companion object {
         val TAG = "Fiery"
         lateinit var instance: App
@@ -25,6 +29,10 @@ class App : Application() {
         var viewModel: TimerViewModel? = null
         var wentToBackgroundTime: Long = 0
         var isAppInBackground = false
+        private val activityReferences = mutableSetOf<String>()
+        fun isActivityInStack(activityName: String): Boolean {
+            return activityReferences.contains(activityName)
+        }
     }
     var ad_activity_smart: Activity? = null
     var top_activity_smart: Activity? = null
@@ -32,6 +40,8 @@ class App : Application() {
         super.onCreate()
         instance = this
         Core.init(this, VpnActivity::class)
+        Firebase.initialize(this)
+        FirebaseApp.initializeApp(this)
         registerActivityLifecycleCallbacks(AppLifecycleTracker())
         BrowserKey.isAppGreenSameDayGreen()
         if(BrowserKey.uuid_browser.isEmpty()){
@@ -70,6 +80,7 @@ class App : Application() {
         }
 
         override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
+            activityReferences.add(activity.javaClass.name)
             if (activity !is AdActivity) {
                 top_activity_smart = activity
             } else {
@@ -84,8 +95,10 @@ class App : Application() {
         override fun onActivityPaused(activity: Activity) {}
         override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
         override fun onActivityDestroyed(activity: Activity) {
+            activityReferences.remove(activity.javaClass.name)
             ad_activity_smart = null
             top_activity_smart = null
         }
     }
+
 }
