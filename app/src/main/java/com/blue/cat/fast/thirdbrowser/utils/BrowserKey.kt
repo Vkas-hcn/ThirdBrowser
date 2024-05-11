@@ -204,13 +204,13 @@ object BrowserKey {
 
     var rl_data_fiery = false
         set(value) {
-            sharedPreferences.edit().run {
+            App.mmkvFiery.edit().run {
                 putBoolean("rl_data_fiery", value)
                 commit()
             }
             field = value
         }
-        get() = sharedPreferences.getBoolean("rl_data_fiery", false)
+        get() = App.mmkvFiery.getBoolean("rl_data_fiery", false)
     fun getCloakData(context: Context): Map<String, String> {
         return mapOf(
             "ir" to uuid_browser, // distinct_id

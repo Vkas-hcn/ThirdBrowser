@@ -16,6 +16,7 @@ import com.google.android.gms.ads.AdActivity
 import com.google.firebase.FirebaseApp
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.ktx.initialize
+import com.tencent.mmkv.MMKV
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.util.UUID
@@ -29,6 +30,9 @@ class App : Application() {
         var viewModel: TimerViewModel? = null
         var wentToBackgroundTime: Long = 0
         var isAppInBackground = false
+        val mmkvFiery by lazy {
+            MMKV.mmkvWithID("fiery", MMKV.MULTI_PROCESS_MODE)
+        }
         private val activityReferences = mutableSetOf<String>()
         fun isActivityInStack(activityName: String): Boolean {
             return activityReferences.contains(activityName)
@@ -39,6 +43,7 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this
+        MMKV.initialize(this)
         Core.init(this, VpnActivity::class)
         Firebase.initialize(this)
         FirebaseApp.initializeApp(this)

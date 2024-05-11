@@ -9,12 +9,14 @@ import com.github.shadowsocks.bg.BaseService
 import com.tencent.mmkv.MMKV
 
 object MkUtils {
-    val sharedPrefs = Core.app.getSharedPreferences("browser_dog", Context.MODE_PRIVATE)
+    private val mmkv by lazy {
+        MMKV.mmkvWithID("fiery", MMKV.MULTI_PROCESS_MODE)
+    }
 
     private fun getFlowData(): Boolean {
-        val value = sharedPrefs.getBoolean("rl_data_fiery", true)
-        Log.e("TAG", "getAroundFlowJsonData-ss: ${value}")
-        return value
+        val data = mmkv.decodeBool("rl_data_fiery", true)
+        Log.e("TAG", "getAroundFlowJsonData-ss: ${data}")
+        return data
     }
 
     fun brand(builder: VpnService.Builder, myPackageName: String) {
