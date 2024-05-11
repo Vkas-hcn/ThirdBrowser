@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.addCallback
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -132,7 +133,8 @@ class VpnActivity : AppCompatActivity(),
         }
         finish()
     }
-    fun onCLickMark(v:View){}
+
+    fun onCLickMark(v: View) {}
     private fun onCLickFun() {
         binding.imgFinish.setOnClickListener {
             backFun()
@@ -457,6 +459,7 @@ class VpnActivity : AppCompatActivity(),
         }
     }
 
+
     private fun showAddAd(addAdData: Any) {
         FieryAdMob.showFullScreenOf(
             where = BrowserKey.Fiery_CONNECT_INT,
@@ -464,8 +467,10 @@ class VpnActivity : AppCompatActivity(),
             res = addAdData,
             preload = true,
             onShowCompleted = {
-                lifecycleScope.launch(Dispatchers.Main) {
-                    disOrConnectFun()
+                if (lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
+                    lifecycleScope.launch(Dispatchers.Main) {
+                        disOrConnectFun()
+                    }
                 }
             }
         )

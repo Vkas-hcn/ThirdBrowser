@@ -22,6 +22,7 @@ import kotlinx.coroutines.launch
 import java.util.UUID
 
 class App : Application() {
+    var currentTime :Long = 0
 
     companion object {
         val TAG = "Fiery"
@@ -63,7 +64,7 @@ class App : Application() {
             runningActivities++
             if (isAppInBackground && runningActivities > 0) {
                 isAppInBackground = false
-                val currentTime = System.currentTimeMillis()
+                 currentTime = System.currentTimeMillis()
                 if (currentTime - wentToBackgroundTime > 3000) {
                     ad_activity_smart?.finish()
                     if (top_activity_smart is GuideActivity) {

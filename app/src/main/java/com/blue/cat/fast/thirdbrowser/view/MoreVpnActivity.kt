@@ -136,7 +136,7 @@ class MoreVpnActivity : AppCompatActivity() {
     private fun backToVpnConnect() {
         val bean = Gson().fromJson(clickDataString, BrowserServiceBean::class.java)
         allServiceBeanData.forEach {
-            it.isCheckThis = bean.ip == it.ip && bean.bestService == it.bestService
+            it.isCheckThis = (bean.ip == it.ip) && (bean.bestService == it.bestService)
         }
         BrowserKey.clickVpn = clickDataString
         finish()

@@ -61,7 +61,7 @@ class GuideActivity : AppCompatActivity() {
             }
         }
         showOpenAdLive.observe(this) {
-                showOpenAd(it)
+            showOpenAd(it)
         }
     }
 
@@ -73,20 +73,26 @@ class GuideActivity : AppCompatActivity() {
             if (BrowserKey.vpn_guide_state == 2) {
                 VpnActivity.startAndConnect(this@GuideActivity, BrowserKey.vpn_guide_state)
             } else {
-                if(BVDataUtils.showAdBlacklist()){
-                    if(App.isActivityInStack(MainActivity().javaClass.name)){
+                if (BVDataUtils.showAdBlacklist()) {
+                    if (App.isActivityInStack(MainActivity().javaClass.name)) {
                         finish()
-                    }else{
+                    } else {
                         MainActivity.start(this)
                     }
-                }else{
+                } else {
                     Guide2Activity.start(this@GuideActivity)
                 }
             }
         } else {
-            if(App.isActivityInStack(MainActivity().javaClass.name)){
+            if (App.isActivityInStack(MainActivity().javaClass.name)
+                || App.isActivityInStack(VpnActivity().javaClass.name)
+                || App.isActivityInStack(ResultActivity().javaClass.name)
+                || App.isActivityInStack(MoreVpnActivity().javaClass.name)
+                || App.isActivityInStack(HistoryActivity().javaClass.name)
+                || App.isActivityInStack(BookmarkActivity().javaClass.name)
+            ) {
                 finish()
-            }else{
+            } else {
                 MainActivity.start(this)
             }
         }
@@ -145,7 +151,7 @@ class GuideActivity : AppCompatActivity() {
                         if (FieryAdMob.resultOf(BrowserKey.Fiery_OPEN) != null) {
                             FieryAdMob.resultOf(BrowserKey.Fiery_OPEN)
                                 ?.let {
-                                    if(App.isAppInBackground.not()){
+                                    if (App.isAppInBackground.not()) {
                                         isJump = false
                                         showOpenAdLive.postValue(it)
                                     }

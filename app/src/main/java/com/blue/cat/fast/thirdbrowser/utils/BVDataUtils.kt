@@ -70,20 +70,25 @@ object BVDataUtils {
         return if (vpnBean == null || vpnBean.data.bwsJ.size <= 0) {
             NetUtils.getOnLineServiceData()
             false
-        }else{
-            if(getConnectBrowserServiceBean()==null){
+        } else {
+            if (getConnectBrowserServiceBean() == null) {
                 BrowserKey.connectVpn = Gson().toJson(getBestData())
             }
             true
         }
     }
 
+    var beanRandom: BrowserServiceBean? = null
     private fun getBestData(): BrowserServiceBean? {
         val vpnBean = getVpnServiceList()?.bwsJ ?: return null
         if (vpnBean.isNotEmpty()) {
-            val bean = vpnBean.random()
-            bean.bestService = true
-            bean.country = "Fast Server"
+            val bean = if (beanRandom == null) {
+                vpnBean.random()
+            } else {
+                beanRandom
+            }
+            bean?.bestService = true
+            bean?.country = "Fast Server"
             return bean
         }
         return null
@@ -115,9 +120,11 @@ object BVDataUtils {
         data?.removeIf { it.timeDate == bean.timeDate }
         BrowserKey.history_data_browser = Gson().toJson(data)
     }
+
     fun clearWebPageHistory() {
         BrowserKey.history_data_browser = ""
     }
+
     fun clearWebPageBookmark() {
         BrowserKey.bookmark_data_browser = ""
     }
@@ -248,59 +255,66 @@ object BVDataUtils {
     fun getAdJson(): FieryAdBean {
         val dataJson = BrowserKey.fileBase_ad_data.let {
             it.ifEmpty {
-                BrowserKey.loadJSONFromAsset(App.instance,BrowserKey.fiery_ad_data)
+                BrowserKey.loadJSONFromAsset(App.instance, BrowserKey.fiery_ad_data)
             }
         }
         return try {
             Gson().fromJson(dataJson, object : TypeToken<FieryAdBean>() {}.type)
         } catch (e: Exception) {
             Gson().fromJson(
-                BrowserKey.loadJSONFromAsset(App.instance,BrowserKey.fiery_ad_data),
+                BrowserKey.loadJSONFromAsset(App.instance, BrowserKey.fiery_ad_data),
                 object : TypeToken<FieryAdBean>() {}.type
             )
         }
     }
+
     private fun getCoffeJson(): CoffeBean {
         val dataJson = BrowserKey.fileBase_coffe_data.let {
             it.ifEmpty {
-                BrowserKey.loadJSONFromAsset(App.instance,BrowserKey.coffe)
+                BrowserKey.loadJSONFromAsset(App.instance, BrowserKey.coffe)
             }
         }
         return try {
             Gson().fromJson(dataJson, object : TypeToken<CoffeBean>() {}.type)
         } catch (e: Exception) {
             Gson().fromJson(
-                BrowserKey.loadJSONFromAsset(App.instance,BrowserKey.coffe),
+                BrowserKey.loadJSONFromAsset(App.instance, BrowserKey.coffe),
                 object : TypeToken<CoffeBean>() {}.type
             )
         }
     }
+
     //获取间隔次数(0:搜索x次、1:删除x条记录、2:添加x条书签、3:删除x条书签 )
-    private fun getAdInterval(index:Int): Int {
+    private fun getAdInterval(index: Int): Int {
         val numArray = getCoffeJson().act.split("#").map { it.toInt() }
         return numArray[index]
     }
 
-    fun getIsCanShowAd(index:Int): Boolean {
-        val numArray = if(getAdInterval(index)<=0) 0 else getAdInterval(index)
+    fun getIsCanShowAd(index: Int): Boolean {
+        val numArray = if (getAdInterval(index) <= 0) 0 else getAdInterval(index)
         return when (index) {
             0 -> {
-                BrowserKey.serachNum%(numArray+1) == 0
+                BrowserKey.serachNum % (numArray + 1) == 0
             }
+
             1 -> {
-                BrowserKey.deleteHistoryNum%(numArray+1) == 0
+                BrowserKey.deleteHistoryNum % (numArray + 1) == 0
             }
+
             2 -> {
-                BrowserKey.addMarkNum % (numArray+1) == 0
+                BrowserKey.addMarkNum % (numArray + 1) == 0
             }
+
             3 -> {
-                BrowserKey.deleteMarkNum % (numArray+1) == 0
+                BrowserKey.deleteMarkNum % (numArray + 1) == 0
             }
+
             else -> {
-                BrowserKey.addMarkNum % (numArray+1) == 0
+                BrowserKey.addMarkNum % (numArray + 1) == 0
             }
         }
     }
+
     fun showAdBlacklist(): Boolean {
         val blackData = BrowserKey.black_data_browser != "zorn"
         return when (getCoffeJson().sto) {
@@ -317,22 +331,23 @@ object BVDataUtils {
             }
         }
     }
+
     fun rLOr() {
-        BrowserKey.rl_data_fiery =  when (getCoffeJson().vis) {
+        BrowserKey.rl_data_fiery = when (getCoffeJson().vis) {
             "1" -> {
-                 true
+                true
             }
 
             "2" -> {
-                 false
+                false
             }
 
             "3" -> {
-                 showAdBlacklist()
+                showAdBlacklist()
             }
 
             else -> {
-                 true
+                true
             }
         }
         Log.e("TAG", "getAroundFlowJsonData-rLOr: ${BrowserKey.rl_data_fiery}")
