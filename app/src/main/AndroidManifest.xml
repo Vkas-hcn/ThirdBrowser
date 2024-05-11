@@ -16,6 +16,9 @@
         android:theme="@style/Theme.ThirdBrowser"
         tools:replace="android:fullBackupContent"
         tools:targetApi="31">
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="@string/rthsdcvrhttrysdvqwd" />
         <activity
             android:name=".view.GuideActivity"
             android:exported="true"
@@ -54,6 +57,11 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".view.MoreVpnActivity"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".view.Guide2Activity"
             android:exported="true"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />

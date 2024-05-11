@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.Application
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.lifecycle.ViewModelProvider
 import com.blue.cat.fast.thirdbrowser.model.TimerViewModel
 import com.blue.cat.fast.thirdbrowser.utils.BrowserKey
@@ -11,27 +12,34 @@ import com.blue.cat.fast.thirdbrowser.utils.NetUtils
 import com.blue.cat.fast.thirdbrowser.view.GuideActivity
 import com.blue.cat.fast.thirdbrowser.view.VpnActivity
 import com.github.shadowsocks.Core
+import com.google.android.gms.ads.AdActivity
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.util.UUID
 
 class App : Application() {
     companion object {
+        val TAG = "Fiery"
         lateinit var instance: App
         var timerText = "00:00:00"
         var viewModel: TimerViewModel? = null
         var wentToBackgroundTime: Long = 0
         var isAppInBackground = false
     }
-
+    var ad_activity_smart: Activity? = null
+    var top_activity_smart: Activity? = null
     override fun onCreate() {
         super.onCreate()
         instance = this
         Core.init(this, VpnActivity::class)
         registerActivityLifecycleCallbacks(AppLifecycleTracker())
+        BrowserKey.isAppGreenSameDayGreen()
         if(BrowserKey.uuid_browser.isEmpty()){
             BrowserKey.uuid_browser = UUID.randomUUID().toString()
         }
+        Core.stopService()
+        BrowserKey.vpnState = -1
+        BrowserKey.vpnClickState = -1
     }
     private inner class AppLifecycleTracker : ActivityLifecycleCallbacks {
         private var runningActivities = 0
@@ -42,7 +50,12 @@ class App : Application() {
                 isAppInBackground = false
                 val currentTime = System.currentTimeMillis()
                 if (currentTime - wentToBackgroundTime > 3000) {
+                    ad_activity_smart?.finish()
+                    if (top_activity_smart is GuideActivity) {
+                        top_activity_smart?.finish()
+                    }
                     val intent = Intent(activity, GuideActivity::class.java)
+                    intent.putExtra("haveHot", true)
                     activity.startActivity(intent)
                 }
             }
@@ -56,10 +69,23 @@ class App : Application() {
             }
         }
 
-        override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
-        override fun onActivityResumed(activity: Activity) {}
+        override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
+            if (activity !is AdActivity) {
+                top_activity_smart = activity
+            } else {
+                ad_activity_smart = activity
+            }
+        }
+        override fun onActivityResumed(activity: Activity) {
+            if (activity !is AdActivity) {
+                top_activity_smart = activity
+            }
+        }
         override fun onActivityPaused(activity: Activity) {}
         override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
-        override fun onActivityDestroyed(activity: Activity) {}
+        override fun onActivityDestroyed(activity: Activity) {
+            ad_activity_smart = null
+            top_activity_smart = null
+        }
     }
 }

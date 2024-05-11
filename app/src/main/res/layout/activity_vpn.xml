@@ -110,39 +110,6 @@
                 app:layout_constraintTop_toTopOf="@+id/img_base" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-        <ImageView
-            android:id="@+id/img_halo"
-            android:layout_width="281dp"
-            android:layout_height="281dp"
-            android:src="@drawable/icon_halo"
-            android:visibility="@{vpnState ==2? View.VISIBLE : View.GONE }"
-            app:layout_constraintBottom_toBottomOf="@+id/cl_vpn"
-            app:layout_constraintEnd_toEndOf="@+id/cl_vpn"
-            app:layout_constraintStart_toStartOf="@+id/cl_vpn"
-            app:layout_constraintTop_toTopOf="@+id/cl_vpn" />
-        <com.airbnb.lottie.LottieAnimationView
-            android:id="@+id/lottie"
-            android:layout_width="211dp"
-            android:layout_height="211dp"
-            android:visibility="@{showGuide? View.VISIBLE : View.GONE }"
-            app:layout_constraintBottom_toBottomOf="@+id/cl_vpn"
-            app:layout_constraintEnd_toEndOf="@+id/cl_vpn"
-            app:layout_constraintStart_toStartOf="@+id/cl_vpn"
-            app:layout_constraintTop_toTopOf="@+id/cl_vpn"
-            app:lottie_autoPlay="true"
-            app:lottie_fileName="data.json"
-            app:lottie_imageAssetsFolder="images"
-            app:lottie_loop="true" />
-
-        <ProgressBar
-            android:id="@+id/pro_connect"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@+id/cl_vpn"
-            app:layout_constraintEnd_toEndOf="@+id/cl_vpn"
-            app:layout_constraintStart_toStartOf="@+id/cl_vpn"
-            app:layout_constraintTop_toTopOf="@+id/cl_vpn" />
         <LinearLayout
             android:id="@+id/ll_service"
             android:layout_width="match_parent"
@@ -176,6 +143,47 @@
                 android:layout_height="wrap_content"
                 android:src="@drawable/icon_be" />
         </LinearLayout>
+
+        <ImageView
+            android:id="@+id/img_halo"
+            android:layout_width="281dp"
+            android:layout_height="281dp"
+            android:src="@drawable/icon_halo"
+            android:visibility="@{vpnState ==2? View.VISIBLE : View.GONE }"
+            app:layout_constraintBottom_toBottomOf="@+id/cl_vpn"
+            app:layout_constraintEnd_toEndOf="@+id/cl_vpn"
+            app:layout_constraintStart_toStartOf="@+id/cl_vpn"
+            app:layout_constraintTop_toTopOf="@+id/cl_vpn" />
+        <View
+            android:id="@+id/view_mark"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#9920263A"
+            android:onClick="onCLickMark"
+            android:visibility="@{showGuide ? View.VISIBLE : View.GONE}" />
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/lottie"
+            android:layout_width="211dp"
+            android:layout_height="211dp"
+            android:visibility="@{showGuide? View.VISIBLE : View.GONE }"
+            app:layout_constraintBottom_toBottomOf="@+id/cl_vpn"
+            app:layout_constraintEnd_toEndOf="@+id/cl_vpn"
+            app:layout_constraintStart_toStartOf="@+id/cl_vpn"
+            app:layout_constraintTop_toTopOf="@+id/cl_vpn"
+            app:lottie_autoPlay="true"
+            app:lottie_fileName="data.json"
+            app:lottie_imageAssetsFolder="images"
+            app:lottie_loop="true" />
+
+        <ProgressBar
+            android:id="@+id/pro_connect"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/cl_vpn"
+            app:layout_constraintEnd_toEndOf="@+id/cl_vpn"
+            app:layout_constraintStart_toStartOf="@+id/cl_vpn"
+            app:layout_constraintTop_toTopOf="@+id/cl_vpn" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cl_due"

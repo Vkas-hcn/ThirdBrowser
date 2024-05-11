@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_guide2">
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="244dp"
+            android:layout_height="244dp"
+            android:layout_marginTop="88dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/icon_guide2_top"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="36dp"
+            android:layout_marginEnd="36dp"
+            android:text="The VPN connection improves internet speed, encrypts network data, safeguards your privacy, allowing you to fully enjoy a superior online experience."
+            android:textColor="#FFFFFFFF"
+            android:textSize="12sp"
+            android:lineHeight="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imageView" />
+
+        <TextView
+            android:id="@+id/tv_connect"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_connect"
+            android:gravity="center"
+            android:text="Connect"
+            android:layout_marginTop="48dp"
+            android:layout_marginHorizontal="15dp"
+            android:textColor="#FFFFFFFF"
+            android:textSize="15sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView4" />
+
+        <TextView
+            android:id="@+id/tv_subsequent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_subsequent"
+            android:gravity="center"
+            android:text="Subsequent"
+            android:paddingVertical="16dp"
+            android:layout_marginHorizontal="36dp"
+            android:textColor="#FFFFFFFF"
+            android:textSize="15sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_connect" />
+
+        <TextView
+            android:id="@+id/tv_no_acceleration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No acceleration yet"
+            android:textColor="#80AEB5CE"
+            android:textSize="10sp"
+            android:layout_marginBottom="45dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

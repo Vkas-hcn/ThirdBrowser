@@ -18,6 +18,7 @@ interface ApiService {
     suspend fun getRecordNetData(@QueryMap(encoded = true) params: Map<String, String>): Response<String>
     @POST
     fun postDynamicUrl(@Url url: String, @Body body: RequestBody): Call<ResponseBody>
-
+    @GET()
+    fun getData(@Url url: String): Call<String>
 
 }

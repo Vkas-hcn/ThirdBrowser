@@ -8,12 +8,18 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
+import androidx.activity.OnBackPressedCallback
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.blue.cat.fast.thirdbrowser.databinding.ActivityMoreVpnBinding
 import com.blue.cat.fast.thirdbrowser.utils.BVDataUtils
 import com.blue.cat.fast.thirdbrowser.utils.BrowserKey
 import com.blue.cat.fast.thirdbrowser.utils.BrowserServiceBean
+import com.blue.cat.fast.thirdbrowser.view.ad.FieryAdMob
 import com.google.gson.Gson
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.Locale
 
 class MoreVpnActivity : AppCompatActivity() {
@@ -21,6 +27,7 @@ class MoreVpnActivity : AppCompatActivity() {
     private lateinit var allServiceBeanData: MutableList<BrowserServiceBean>
     private lateinit var adapter: OnlineServiceAdapter
     private var clickDataString = ""
+    private var showBackMarkAdLive = MutableLiveData<Any>()
 
     companion object {
         fun start(activity: AppCompatActivity) {
@@ -31,10 +38,11 @@ class MoreVpnActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+        FieryAdMob.loadOf(BrowserKey.Fiery_BACK_INT)
         initVpnAdapter()
         editSearchFun()
         binding.imgFinish.setOnClickListener {
-            finish()
+            loadBackAd()
         }
         binding.tvNo.setOnClickListener {
             binding.clDisconnect.visibility = View.GONE
@@ -46,6 +54,14 @@ class MoreVpnActivity : AppCompatActivity() {
             }
         }
         BrowserKey.clickVpn = ""
+        showBackMarkAdLive.observe(this) {
+            showBackAd(it)
+        }
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                loadBackAd()
+            }
+        })
     }
 
     private fun initVpnAdapter() {
@@ -124,5 +140,35 @@ class MoreVpnActivity : AppCompatActivity() {
         }
         BrowserKey.clickVpn = clickDataString
         finish()
+    }
+
+
+    private fun loadBackAd() {
+        if (BrowserKey.isThresholdReached() && FieryAdMob.resultOf(BrowserKey.Fiery_BACK_INT) == "") {
+            finish()
+            return
+        }
+        if (FieryAdMob.resultOf(BrowserKey.Fiery_BACK_INT) != null) {
+            FieryAdMob.resultOf(BrowserKey.Fiery_BACK_INT)
+                ?.let {
+                    showBackMarkAdLive.postValue(it)
+                }
+        } else {
+            finish()
+        }
+    }
+
+    private fun showBackAd(addAdData: Any) {
+        FieryAdMob.showFullScreenOf(
+            where = BrowserKey.Fiery_BACK_INT,
+            context = this,
+            res = addAdData,
+            preload = true,
+            onShowCompleted = {
+                lifecycleScope.launch(Dispatchers.Main) {
+                    finish()
+                }
+            }
+        )
     }
 }

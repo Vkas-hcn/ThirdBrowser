@@ -7,7 +7,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.Bitmap
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.KeyEvent
@@ -16,16 +15,31 @@ import android.view.inputmethod.EditorInfo
 import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.lifecycleScope
+import com.blue.cat.fast.thirdbrowser.App
 import com.blue.cat.fast.thirdbrowser.R
 import com.blue.cat.fast.thirdbrowser.databinding.ActivityMainBinding
 import com.blue.cat.fast.thirdbrowser.utils.BVDataUtils
 import com.blue.cat.fast.thirdbrowser.utils.BrowserDataBean
 import com.blue.cat.fast.thirdbrowser.utils.BrowserKey
 import com.blue.cat.fast.thirdbrowser.utils.BrowserServiceBean
+import com.blue.cat.fast.thirdbrowser.view.ad.FieryAdMob
 import com.google.gson.Gson
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.withTimeoutOrNull
+
 
 class MainActivity : AppCompatActivity() {
     val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
@@ -34,6 +48,9 @@ class MainActivity : AppCompatActivity() {
     private var webUrl: String = ""
     private lateinit var webView: WebView
     private lateinit var finishReceiver: BroadcastReceiver
+    private var addAdJob: Job? = null
+    private var showAddAdLive = MutableLiveData<Any>()
+    private var isSearch = false
 
     companion object {
         private var isHistory = false
@@ -55,20 +72,28 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         loadUrl = intent.getStringExtra("url") ?: ""
-        Log.e("TAG", "onCreate: ${loadUrl}")
         clickFun()
         initWeb()
         initEditText()
         onBackFun()
-        // 注册接收器
         finishReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
-                // 结束当前Activity
                 finish()
             }
         }
         registerReceiver(finishReceiver, IntentFilter("ACTION_FINISH_ACTIVITY"))
+        showAddAdLive.observe(this) {
+            showAddAd(it)
+        }
 
+    }
+
+    private fun showSera() {
+        if (BrowserKey.vpnState == 2) {
+            binding.imgUrlConnect.setImageResource(R.drawable.icon_url_connect)
+        } else {
+            binding.imgUrlConnect.setImageResource(R.drawable.icon_url_dis)
+        }
     }
 
     override fun onDestroy() {
@@ -140,10 +165,11 @@ class MainActivity : AppCompatActivity() {
             binding.showMenu = false
         }
         binding.tvAdd.setOnClickListener {
-            val bean = BrowserDataBean(webUrl, webTitle, BVDataUtils.getCurrentTime(), false)
-            BVDataUtils.saveWebPageBookmark(bean)
-            binding.showMenu = false
-            Toast.makeText(this, "Bookmark added successfully", Toast.LENGTH_SHORT).show()
+            BrowserKey.addMarkNum = BrowserKey.addMarkNum + 1
+            isSearch = false
+            loadAddAd {
+                addMark()
+            }
         }
         binding.tvPrivate.setOnClickListener {
             val intent = Intent(Intent.ACTION_VIEW)
@@ -157,6 +183,14 @@ class MainActivity : AppCompatActivity() {
         }
         binding.imgVpn.setOnClickListener {
             VpnActivity.start(this)
+        }
+        binding.imgUrlConnect.setOnClickListener {
+            if (BrowserKey.vpnState == 2) {
+                VpnActivity.start(this)
+            } else {
+                BrowserKey.vpn_guide_state = 3
+                VpnActivity.startAndConnect(this, BrowserKey.vpn_guide_state)
+            }
         }
     }
 
@@ -243,17 +277,24 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    fun enterSearch(searchText: String, editText: EditText) {
+        binding.showWeb = true
+        webView.loadUrl(searchGoogle(searchText))
+        editText.text?.clear()
+        BVDataUtils.closeKeyboard(editText, this)
+    }
 
     private fun initEditText() {
         binding.edtSearch.setOnEditorActionListener { v, actionId, event ->
-            if (actionId == EditorInfo.IME_ACTION_DONE ||
-                (event != null && event.keyCode == KeyEvent.KEYCODE_ENTER)
-            ) {
-                if (binding.edtSearch.text.toString().trim().isNotEmpty()) {
-                    binding.showWeb = true
-                    webView.loadUrl(searchGoogle(binding.edtSearch.text.toString()))
-                    binding.edtSearch.text?.clear()
-                    BVDataUtils.closeKeyboard(binding.edtSearch, this)
+            if (actionId == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN) {
+                val searchText = binding.edtSearch.text.toString().trim()
+                if (searchText.isNotEmpty()) {
+                    Log.e("TAG", "initEditText: 1")
+                    isSearch = true
+                    BrowserKey.serachNum = BrowserKey.serachNum + 1
+                    loadAddAd {
+                        enterSearch(searchText, binding.edtSearch)
+                    }
                 }
                 true
             } else {
@@ -261,15 +302,16 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        binding.edtSearchWeb.setOnEditorActionListener { v, actionId, event ->
-            if (actionId == EditorInfo.IME_ACTION_DONE ||
-                (event != null && event.keyCode == KeyEvent.KEYCODE_ENTER)
-            ) {
-                if (binding.edtSearchWeb.text.toString().trim().isNotEmpty()) {
-                    binding.showWeb = true
-                    webView.loadUrl(searchGoogle(binding.edtSearchWeb.text.toString()))
-                    binding.edtSearchWeb.text?.clear()
-                    BVDataUtils.closeKeyboard(binding.edtSearchWeb, this)
+        binding.edtSearchWeb.setOnKeyListener { v, keyCode, event ->
+            if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN) {
+                val searchText = binding.edtSearchWeb.text.toString().trim()
+                if (searchText.isNotEmpty()) {
+                    Log.e("TAG", "initEditText: 2")
+                    isSearch = true
+                    BrowserKey.serachNum = BrowserKey.serachNum + 1
+                    loadAddAd {
+                        enterSearch(searchText, binding.edtSearchWeb)
+                    }
                 }
                 true
             } else {
@@ -277,6 +319,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
 
     private fun canGoBack(): Boolean {
         return webView.canGoBack()
@@ -309,5 +352,77 @@ class MainActivity : AppCompatActivity() {
         binding.imgVpn.setImageResource(BVDataUtils.getImageFlag(bean?.country ?: ""))
         binding.imgFlag.setImageResource(BVDataUtils.getImageFlag(bean?.country ?: ""))
         binding.tvCountry.text = bean?.country ?: "Smart Sever"
+        showSera()
+    }
+
+    private fun loadAddAd(nextFun: () -> Unit) {
+        addAdJob?.cancel()
+        addAdJob = null
+        var isJump = true
+        addAdJob = lifecycleScope.launch {
+            FieryAdMob.loadOf(BrowserKey.Fiery_ADD_INT)
+            if (!isSearch) {
+                binding.haveLoading = true
+                delay(1000)
+            }
+            val typeInt = if (isSearch) 0 else 2
+            try {
+                withTimeout(4000) {
+                    while (isActive) {
+                        if(BVDataUtils.showAdBlacklist()){
+                            isJump = true
+                            break
+                        }
+                        if (!BVDataUtils.getIsCanShowAd(typeInt)) {
+                            isJump = true
+                            break
+                        }
+                        if (BrowserKey.isThresholdReached() && FieryAdMob.resultOf(BrowserKey.Fiery_ADD_INT) == "") {
+                            isJump = true
+                            break
+                        }
+                        if (FieryAdMob.resultOf(BrowserKey.Fiery_ADD_INT) != null) {
+                            FieryAdMob.resultOf(BrowserKey.Fiery_ADD_INT)
+                                ?.let {
+                                    isJump = false
+                                    showAddAdLive.postValue(it)
+                                }
+                            break
+                        }
+                        delay(500)
+                    }
+                }
+            } finally {
+                if (isJump) {
+                    binding.haveLoading = false
+                    nextFun()
+                }
+            }
+        }
+    }
+
+    private fun showAddAd(addAdData: Any) {
+        FieryAdMob.showFullScreenOf(
+            where = BrowserKey.Fiery_ADD_INT,
+            context = this,
+            res = addAdData,
+            preload = true,
+            onShowCompleted = {
+                lifecycleScope.launch(Dispatchers.Main) {
+                    binding.haveLoading = false
+                    addMark()
+                }
+            }
+        )
+    }
+
+    private fun addMark() {
+        if (App.isAppInBackground) {
+            return
+        }
+        val bean = BrowserDataBean(webUrl, webTitle, BVDataUtils.getCurrentTime(), false)
+        BVDataUtils.saveWebPageBookmark(bean)
+        binding.showMenu = false
+        Toast.makeText(this, "Bookmark added successfully", Toast.LENGTH_SHORT).show()
     }
 }

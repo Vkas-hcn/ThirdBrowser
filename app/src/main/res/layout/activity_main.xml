@@ -16,6 +16,11 @@
             name="showMenu"
             type="Boolean"
             android:value="false" />
+
+        <variable
+            name="haveLoading"
+            type="Boolean"
+            android:value="false" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -219,7 +224,8 @@
 
             <LinearLayout
                 android:id="@+id/ll_web_search"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
+                android:weightSum="1"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="24dp"
                 android:layout_marginTop="6dp"
@@ -228,7 +234,7 @@
                 android:orientation="horizontal"
                 android:paddingHorizontal="20dp"
                 android:paddingVertical="15dp"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/img_url_connect"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
@@ -251,6 +257,17 @@
                     android:textColorHint="#AEB5CE"
                     android:textSize="16sp" />
             </LinearLayout>
+
+            <ImageView
+                android:id="@+id/img_url_connect"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/icon_url_dis"
+                app:layout_constraintBottom_toBottomOf="@+id/ll_web_search"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginEnd="17dp"
+                app:layout_constraintStart_toEndOf="@+id/ll_web_search"
+                app:layout_constraintTop_toTopOf="@+id/ll_web_search" />
 
             <FrameLayout
                 android:id="@+id/home_web"
@@ -398,6 +415,49 @@
                 android:text="Private"
                 android:textColor="#FFAEB5CE"
                 android:textSize="11sp" />
+        </LinearLayout>
+
+        <View
+            android:id="@+id/view_mark"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#9920263A"
+            android:onClick="onCLickMark"
+            android:visibility="@{haveLoading? View.VISIBLE : View.GONE}" />
+
+        <LinearLayout
+            android:id="@+id/ll_loading"
+            android:layout_width="232dp"
+            android:layout_height="217dp"
+            android:background="@drawable/bg_dialog_black"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="@{haveLoading? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.35">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ic_loading_1"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_loading_2" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tv_loading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Loading……"
+                android:textColor="#FFAEB5CE"
+                android:textSize="10sp" />
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

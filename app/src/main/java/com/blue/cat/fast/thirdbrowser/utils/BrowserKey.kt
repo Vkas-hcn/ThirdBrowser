@@ -6,7 +6,11 @@ import android.content.SharedPreferences
 import android.os.Build
 import android.provider.Settings
 import com.blue.cat.fast.thirdbrowser.App
+import com.blue.cat.fast.thirdbrowser.utils.BVDataUtils.getAdJson
 import org.json.JSONObject
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 import java.util.UUID
 
@@ -16,6 +20,17 @@ object BrowserKey {
     const val online_service_url = "https://test.securefierybrowser.com/ZrzX/qOE/"
     const val online_tba_url = "https://test-grace.securefierybrowser.com/goethe/polytope"
     const val online_cloak_url = "https://level.securefierybrowser.com/"
+    const val Fiery_OPEN = "open"
+    const val Fiery_ADD_INT = "addInt"
+    const val Fiery_CONNECT_INT = "connectInt"
+    const val Fiery_BACK_INT = "backInt"
+    const val online_ad_key = "online_ad_key"
+    const val online_coffe_key = "coffe"
+
+    var addMarkNum = 0
+    var deleteMarkNum = 0
+    var deleteHistoryNum = 0
+    var serachNum = 0
     private val sharedPreferences: SharedPreferences =
         App.instance.getSharedPreferences("browser_dog", Context.MODE_PRIVATE)
     var vpnState = -1
@@ -114,7 +129,7 @@ object BrowserKey {
         }
         get() = sharedPreferences.getString("ip_first", "").toString()
 
-    var online_service_data  =""
+    var online_service_data = ""
         set(value) {
             sharedPreferences.edit().run {
                 putString("online_service_data", value)
@@ -124,7 +139,75 @@ object BrowserKey {
         }
         get() = sharedPreferences.getString("online_service_data", "").toString()
 
-    @SuppressLint("HardwareIds")
+    var vpn_guide_state = 0
+        set(value) {
+            sharedPreferences.edit().run {
+                putInt("vpn_guide_state", value)
+                commit()
+            }
+            field = value
+        }
+        get() = sharedPreferences.getInt("vpn_guide_state", 0)
+
+    var fileBase_ad_data = ""
+        set(value) {
+            sharedPreferences.edit().run {
+                putString("fileBase_ad_data", value)
+                commit()
+            }
+            field = value
+        }
+        get() = sharedPreferences.getString("fileBase_ad_data", "").toString()
+    var fileBase_coffe_data = ""
+        set(value) {
+            sharedPreferences.edit().run {
+                putString("fileBase_coffe_data", value)
+                commit()
+            }
+            field = value
+        }
+        get() = sharedPreferences.getString("fileBase_coffe_data", "").toString()
+
+    var local_click_data = 0
+        set(value) {
+            sharedPreferences.edit().run {
+                putInt("local_click_data", value)
+                commit()
+            }
+            field = value
+        }
+        get() = sharedPreferences.getInt("local_click_data", 0)
+
+    var local_show_data = 0
+        set(value) {
+            sharedPreferences.edit().run {
+                putInt("local_show_data", value)
+                commit()
+            }
+            field = value
+        }
+        get() = sharedPreferences.getInt("local_show_data", 0)
+
+    var current_date_fiery = ""
+        set(value) {
+            sharedPreferences.edit().run {
+                putString("current_date_fiery", value)
+                commit()
+            }
+            field = value
+        }
+        get() = sharedPreferences.getString("current_date_fiery", "").toString()
+
+
+    var rl_data_fiery = false
+        set(value) {
+            sharedPreferences.edit().run {
+                putBoolean("rl_data_fiery", value)
+                commit()
+            }
+            field = value
+        }
+        get() = sharedPreferences.getBoolean("rl_data_fiery", false)
     fun getCloakData(context: Context): Map<String, String> {
         return mapOf(
             "ir" to uuid_browser, // distinct_id
@@ -133,9 +216,15 @@ object BrowserKey {
             "casey" to "com.secure.fierybrowser.unlimited",// bundle_id
             "pleasant" to Build.VERSION.RELEASE, // os_version
             "glycogen" to "", // gaid
-            "whether" to Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID), // android_id
+            "whether" to Settings.Secure.getString(
+                context.contentResolver,
+                Settings.Secure.ANDROID_ID
+            ), // android_id
             "grill" to "cache", // os
-            "campus" to context.packageManager.getPackageInfo(context.packageName, 0).versionName, // app_version
+            "campus" to context.packageManager.getPackageInfo(
+                context.packageName,
+                0
+            ).versionName, // app_version
         )
     }
 
@@ -184,7 +273,10 @@ object BrowserKey {
             put("grill", "cache")
 
             //android_id
-            put("whether", Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID))
+            put(
+                "whether",
+                Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
+            )
         }
         jsonData.apply {
             put("spoon", spoon)
@@ -194,6 +286,7 @@ object BrowserKey {
         }
         return jsonData
     }
+
     fun getBuryingPointShu(context: Context, name: String): String {
         return getTopLevelJsonData(context).apply {
             put("dragoon", name)
@@ -210,7 +303,117 @@ object BrowserKey {
         data.put(parameterName, time)
         return getTopLevelJsonData(context).apply {
             put("dragoon", name)
-            put("dilemma",data)
+            put("dilemma", data)
         }.toString()
     }
+
+    fun isThresholdReached(): Boolean {
+        return overrunType() != ""
+    }
+
+    private fun overrunType(): String {
+        if (local_click_data >= getAdJson().ccc) {
+            return "click"
+        }
+        if (local_show_data >= getAdJson().sss) {
+            return "show"
+        }
+        if (local_click_data >= getAdJson().ccc && local_show_data >= getAdJson().sss) {
+            return "click&show"
+        }
+        return ""
+    }
+
+    fun recordNumberOfAdDisplaysGreen() {
+        var showCount = local_show_data
+        showCount++
+        local_show_data = showCount
+    }
+
+    fun recordNumberOfAdClickGreen() {
+        var clicksCount = local_click_data
+        clicksCount++
+        local_click_data = clicksCount
+    }
+
+    fun isAppGreenSameDayGreen() {
+        if (current_date_fiery == "") {
+            current_date_fiery = formatDateNow()
+        } else {
+            if (dateAfterDate(current_date_fiery, formatDateNow())) {
+                current_date_fiery = formatDateNow()
+                local_click_data = 0
+                local_show_data = 0
+            }
+        }
+    }
+
+    private fun formatDateNow(): String {
+        val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd")
+        val date = Date()
+        return simpleDateFormat.format(date)
+    }
+
+    private fun dateAfterDate(startTime: String?, endTime: String?): Boolean {
+        val format = SimpleDateFormat("yyyy-MM-dd")
+        try {
+            val startDate: Date = format.parse(startTime)
+            val endDate: Date = format.parse(endTime)
+            val start: Long = startDate.getTime()
+            val end: Long = endDate.getTime()
+            if (end > start) {
+                return true
+            }
+        } catch (e: ParseException) {
+            e.printStackTrace()
+            return false
+        }
+        return false
+    }
+
+    const val fiery_ad_data = """
+        {
+    "open": [
+        {
+            "lv_fiery": "1",
+            "unit_fiery": "ca-app-pub-3940256099942544/9257395921",
+            "where_fiery": "open",
+            "type_fiery": "open"
+        }
+    ],
+    "addInt": [
+        {
+            "lv_fiery": "1",
+            "unit_fiery": "ca-app-pub-3940256099942544/8691691433",
+            "where_fiery": "addInt",
+            "type_fiery": "interstitial"
+        }
+    ],
+    "connectInt": [
+        {
+            "lv_fiery": "1",
+            "unit_fiery": "ca-app-pub-3940256099942544/1033173712",
+            "where_fiery": "connectInt",
+            "type_fiery": "interstitial"
+        }
+    ],
+    "backInt": [
+        {
+            "lv_fiery": "1",
+            "unit_fiery": "ca-app-pub-3940256099942544/1033173712",
+            "where_fiery": "backInt",
+            "type_fiery": "Interstitial"
+        }
+    ],
+    "ccc": 2,
+    "sss": 20
+}
+    """
+    const val coffe = """
+        {
+    "sto": "1",
+    "vis": "1",
+    "act": "10#3#2#2"
+}
+    """
 }

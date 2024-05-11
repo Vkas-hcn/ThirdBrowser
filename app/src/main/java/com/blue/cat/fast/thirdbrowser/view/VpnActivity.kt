@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.addCallback
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.blue.cat.fast.thirdbrowser.databinding.ActivityVpnBinding
@@ -22,16 +23,20 @@ import com.blue.cat.fast.thirdbrowser.utils.BVDataUtils
 import com.blue.cat.fast.thirdbrowser.utils.BrowserKey
 import com.blue.cat.fast.thirdbrowser.utils.BrowserServiceBean
 import com.blue.cat.fast.thirdbrowser.utils.NetUtils
+import com.blue.cat.fast.thirdbrowser.view.ad.FieryAdMob
 import com.github.shadowsocks.Core
 import com.github.shadowsocks.database.Profile
 import com.github.shadowsocks.database.ProfileManager
 import com.github.shadowsocks.preference.DataStore
 import com.github.shadowsocks.utils.StartService
 import com.google.gson.Gson
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 import kotlin.system.exitProcess
 
 class VpnActivity : AppCompatActivity(),
@@ -40,10 +45,22 @@ class VpnActivity : AppCompatActivity(),
     val binding by lazy { ActivityVpnBinding.inflate(layoutInflater) }
     private val connection = ShadowsocksConnection(true)
     private var jumpType: Int = -1
+    private var connectType: Int = 0
+    private var connectAdJob: Job? = null
+    private var showConnectAdLive = MutableLiveData<Any>()
 
     companion object {
         fun start(activity: AppCompatActivity) {
             activity.startActivity(Intent(activity, VpnActivity::class.java))
+        }
+
+        fun startAndConnect(activity: AppCompatActivity, connectType: Int) {
+            val intent = Intent(activity, VpnActivity::class.java)
+            intent.putExtra("connectType", connectType)
+            activity.startActivity(intent)
+            if (activity is Guide2Activity || activity is GuideActivity) {
+                activity.finish()
+            }
         }
 
         var stateListener: ((BaseService.State) -> Unit)? = null
@@ -52,6 +69,8 @@ class VpnActivity : AppCompatActivity(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+        BVDataUtils.rLOr()
+        connectType = intent.getIntExtra("connectType", 0)
         stateListener?.invoke(BaseService.State.Idle)
         connection.connect(this, this)
         DataStore.publicStore.registerChangeListener(this)
@@ -67,7 +86,12 @@ class VpnActivity : AppCompatActivity(),
         onBackPressedDispatcher.addCallback(this) {
             backFun()
         }
-
+        if (connectType == 1 || connectType == 2 || connectType == 3) {
+            beforeClickVpn()
+        }
+        showConnectAdLive.observe(this) {
+            showAddAd(it)
+        }
     }
 
     private fun haveShowNetWork(): Boolean {
@@ -94,22 +118,24 @@ class VpnActivity : AppCompatActivity(),
             binding.showGuide = false
             return
         }
+
         if (isConnectionProcess()) {
+            Toast.makeText(this, "VPN is connecting. Please wait...", Toast.LENGTH_SHORT).show()
             return
         }
         if (isDisconnectionProcess()) {
-            jumpType = -1
-            connectSuccess()
+            Toast.makeText(this, "VPN is disconnecting. Please wait...", Toast.LENGTH_SHORT).show()
             return
+        }
+        if (connectType == 1 || connectType == 2) {
+            MainActivity.start(this)
         }
         finish()
     }
-
+    fun onCLickMark(v:View){}
     private fun onCLickFun() {
         binding.imgFinish.setOnClickListener {
-            if (!isConnectionProcess()) {
-                finish()
-            }
+            backFun()
         }
         binding.imgService.setOnClickListener {
             jumToServicePage()
@@ -127,6 +153,7 @@ class VpnActivity : AppCompatActivity(),
         binding.viewNetWork.setOnClickListener { }
         binding.tvDue.setOnClickListener {
             finish()
+            exitProcess(0)
         }
         binding.tvOk.setOnClickListener {
             binding.clNetWork.visibility = View.GONE
@@ -138,6 +165,11 @@ class VpnActivity : AppCompatActivity(),
 
     private fun jumToServicePage() {
         if (isConnectionProcess()) {
+            Toast.makeText(this, "VPN is connecting. Please wait...", Toast.LENGTH_SHORT).show()
+            return
+        }
+        if (isDisconnectionProcess()) {
+            Toast.makeText(this, "VPN is disconnecting. Please wait...", Toast.LENGTH_SHORT).show()
             return
         }
         lifecycleScope.launch {
@@ -154,19 +186,26 @@ class VpnActivity : AppCompatActivity(),
     }
 
     private fun beforeClickVpn() {
+        if (binding.vpnState == 1) {
+            return
+        }
         lifecycleScope.launch {
             NetUtils.getIpDataInfo()
             binding.showGuide = false
             binding.proConnect.visibility = View.VISIBLE
             if (BVDataUtils.isHaveServeData()) {
-                initializeServerData()
-                binding.proConnect.visibility = View.GONE
-                connect.launch(null)
+                connectOrDisConnect()
             } else {
                 delay(2000)
                 binding.proConnect.visibility = View.GONE
             }
         }
+    }
+
+    private fun connectOrDisConnect() {
+        initializeServerData()
+        binding.proConnect.visibility = View.GONE
+        connect.launch(null)
     }
 
     private fun setSkServerData(profile: Profile, bestData: BrowserServiceBean): Profile {
@@ -218,42 +257,16 @@ class VpnActivity : AppCompatActivity(),
         binding.showGuide = false
         if (binding.vpnState != 1) {
             duringConnection()
-            disOrConnectFun()
+            loadConnectAd()
         }
     }
 
     private fun disOrConnectFun() {
-        BrowserKey.vpnClickState = BrowserKey.vpnState
-        jumpType = BrowserKey.vpnState
         if (BrowserKey.vpnState == 2) {
-            lifecycleScope.launch {
-                var proInt = 100
-                while (isActive && jumpType != -1) {
-                    proInt--
-                    binding.progressBar.setProgress(proInt.toFloat())
-                    if (proInt <= 0) {
-                        Core.stopService()
-                        cancel()
-                    }
-                    delay(20)
-                }
-            }
+            Core.stopService()
         }
         if (BrowserKey.vpnState == 0) {
-            lifecycleScope.launch {
-                var proInt = 0
-                while (isActive && jumpType != -1) {
-                    proInt++
-                    binding.progressBar.setProgress(proInt.toFloat())
-                    if (proInt == 90) {
-                        Core.startService()
-                    }
-                    if (proInt >= 100) {
-                        cancel()
-                    }
-                    delay(20)
-                }
-            }
+            Core.startService()
         }
     }
 
@@ -265,6 +278,7 @@ class VpnActivity : AppCompatActivity(),
             BVDataUtils.executeWithDebounce {
                 ResultActivity.start(this)
                 App.viewModel?.startTimer()
+                finish()
             }
         }
     }
@@ -301,6 +315,8 @@ class VpnActivity : AppCompatActivity(),
     override fun onStop() {
         super.onStop()
         connection.bandwidthTimeout = 0
+        connectAdJob?.cancel()
+        connectAdJob = null
         if (isConnectionProcess()) {
             jumpType = -1
             disConnectSuccess()
@@ -387,5 +403,71 @@ class VpnActivity : AppCompatActivity(),
             binding.clDue.visibility = View.GONE
             false
         }
+    }
+
+    private fun loadConnectAd() {
+        var isJump = true
+        BrowserKey.vpnClickState = BrowserKey.vpnState
+        jumpType = BrowserKey.vpnState
+        var proInt = if (BrowserKey.vpnState == 2) 100 else 0
+        var isCanShow = false
+        connectAdJob?.cancel()
+        connectAdJob = null
+        connectAdJob = lifecycleScope.launch {
+            FieryAdMob.loadOf(BrowserKey.Fiery_CONNECT_INT)
+            FieryAdMob.loadOf(BrowserKey.Fiery_BACK_INT)
+            try {
+                withTimeout(10000) {
+                    while (isActive) {
+                        if (BrowserKey.vpnState == 2) {
+                            proInt--
+                            if (proInt <= 90) {
+                                isCanShow = true
+                            }
+                        } else {
+                            if (proInt >= 10) {
+                                isCanShow = true
+                            }
+                            proInt++
+                        }
+                        binding.progressBar.setProgress(proInt.toFloat())
+                        if (BrowserKey.isThresholdReached() && FieryAdMob.resultOf(BrowserKey.Fiery_CONNECT_INT) == "") {
+                            isJump = true
+                            break
+                        }
+                        if (FieryAdMob.resultOf(BrowserKey.Fiery_CONNECT_INT) != null && isCanShow) {
+                            FieryAdMob.resultOf(BrowserKey.Fiery_CONNECT_INT)
+                                ?.let {
+                                    isJump = false
+                                    showConnectAdLive.postValue(it)
+                                }
+                            break
+                        }
+                        delay(100)
+                    }
+                }
+            } finally {
+                if (!isActive) {
+                    return@launch
+                }
+                if (isJump) {
+                    disOrConnectFun()
+                }
+            }
+        }
+    }
+
+    private fun showAddAd(addAdData: Any) {
+        FieryAdMob.showFullScreenOf(
+            where = BrowserKey.Fiery_CONNECT_INT,
+            context = this,
+            res = addAdData,
+            preload = true,
+            onShowCompleted = {
+                lifecycleScope.launch(Dispatchers.Main) {
+                    disOrConnectFun()
+                }
+            }
+        )
     }
 }

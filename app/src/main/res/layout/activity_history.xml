@@ -11,6 +11,10 @@
             name="haveData"
             type="Boolean"
             android:value="false" />
+        <variable
+            name="haveLoading"
+            type="Boolean"
+            android:value="false" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -96,5 +100,63 @@
             android:textSize="20sp"
             android:textStyle="bold"
             android:visibility="@{haveData? View.VISIBLE : View.GONE}" />
+        <TextView
+            android:id="@+id/tv_delete_all"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Delete all"
+            android:textColor="#FFFFFFFF"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:paddingVertical="12dp"
+            android:visibility="@{haveData? View.GONE : View.VISIBLE}"
+            android:background="@drawable/bg_subsequent"
+            android:layout_marginBottom="40dp"
+            android:layout_marginHorizontal="32dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+        <View
+            android:id="@+id/view_mark"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:onClick="onCLickMark"
+            android:visibility="@{haveLoading? View.VISIBLE : View.GONE}"
+            android:background="#9920263A"/>
+
+        <LinearLayout
+            android:id="@+id/ll_loading"
+            android:layout_width="232dp"
+            android:layout_height="217dp"
+            android:background="@drawable/bg_dialog_black"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="@{haveLoading? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.35">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ic_loading_1"
+                android:gravity="center">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_loading_2" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tv_loading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Loading……"
+                android:textColor="#FFAEB5CE"
+                android:textSize="10sp" />
+        </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
