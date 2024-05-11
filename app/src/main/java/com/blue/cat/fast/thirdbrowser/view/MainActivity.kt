@@ -21,6 +21,7 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import com.blue.cat.fast.thirdbrowser.App
@@ -90,9 +91,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun showSera() {
         if (BrowserKey.vpnState == 2) {
-            binding.imgUrlConnect.setImageResource(R.drawable.icon_url_connect)
+            binding.imgUrlConnect.isVisible = true
+            binding.lottieConnect.isVisible = false
         } else {
-            binding.imgUrlConnect.setImageResource(R.drawable.icon_url_dis)
+            binding.imgUrlConnect.isVisible = false
+            binding.lottieConnect.isVisible = true
         }
     }
 
@@ -184,7 +187,7 @@ class MainActivity : AppCompatActivity() {
         binding.imgVpn.setOnClickListener {
             VpnActivity.start(this)
         }
-        binding.imgUrlConnect.setOnClickListener {
+        binding.llUrlConnect.setOnClickListener {
             if (BrowserKey.vpnState == 2) {
                 VpnActivity.start(this)
             } else {

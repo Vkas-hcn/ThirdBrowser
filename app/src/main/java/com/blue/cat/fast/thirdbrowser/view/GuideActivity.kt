@@ -16,6 +16,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.MutableLiveData
 import com.blue.cat.fast.thirdbrowser.App
 import com.blue.cat.fast.thirdbrowser.BuildConfig
+import com.blue.cat.fast.thirdbrowser.utils.BVDataUtils
 import com.blue.cat.fast.thirdbrowser.utils.BrowserKey
 import com.blue.cat.fast.thirdbrowser.utils.NetUtils
 import com.blue.cat.fast.thirdbrowser.view.ad.FieryAdMob
@@ -72,11 +73,17 @@ class GuideActivity : AppCompatActivity() {
             if (BrowserKey.vpn_guide_state == 2) {
                 VpnActivity.startAndConnect(this@GuideActivity, BrowserKey.vpn_guide_state)
             } else {
-                Guide2Activity.start(this@GuideActivity)
+                if(BVDataUtils.showAdBlacklist()){
+                    if(App.isActivityInStack(MainActivity().javaClass.name)){
+                        finish()
+                    }else{
+                        MainActivity.start(this)
+                    }
+                }else{
+                    Guide2Activity.start(this@GuideActivity)
+                }
             }
         } else {
-            Log.e("TAG", "jumpToNextPage1: ${App.isActivityInStack(MainActivity().javaClass.name)}")
-            Log.e("TAG", "jumpToNextPage2: ${App.isActivityInStack(this.javaClass.name)}")
             if(App.isActivityInStack(MainActivity().javaClass.name)){
                 finish()
             }else{
