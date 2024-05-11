@@ -255,9 +255,9 @@ object BVDataUtils {
 
     fun getAdJson(): FieryAdBean {
         val dataJson = BrowserKey.fileBase_ad_data.let {
-            if(it.isNotEmpty()){
+            if (it.isNotEmpty()) {
                 decodeBase64(it)
-            }else{
+            } else {
                 BrowserKey.loadJSONFromAsset(App.instance, BrowserKey.fiery_ad_data)
             }
 
@@ -274,9 +274,9 @@ object BVDataUtils {
 
     private fun getCoffeJson(): CoffeBean {
         val dataJson = BrowserKey.fileBase_coffe_data.let {
-            if(it.isNotEmpty()){
+            if (it.isNotEmpty()) {
                 decodeBase64(it)
-            }else{
+            } else {
                 BrowserKey.loadJSONFromAsset(App.instance, BrowserKey.coffe)
             }
         }
@@ -358,6 +358,7 @@ object BVDataUtils {
         }
         Log.e("TAG", "getAroundFlowJsonData-rLOr: ${BrowserKey.rl_data_fiery}")
     }
+
     fun decodeBase64(str: String): String {
         return String(Base64.decode(str, Base64.DEFAULT))
     }

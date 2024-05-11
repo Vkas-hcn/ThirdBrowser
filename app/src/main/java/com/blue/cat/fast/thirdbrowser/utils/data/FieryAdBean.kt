@@ -5,14 +5,14 @@ import com.google.gson.annotations.SerializedName
 
 @Keep
 data class FieryAdBean(
-    @SerializedName("add_int")
-    val addInt: List<DetailAdBean>,
-    @SerializedName("back_int")
-    val backInt: List<DetailAdBean>,
-    @SerializedName("connect_int")
-    val connectInt: List<DetailAdBean>,
-    @SerializedName("open_open")
+    @SerializedName("koper")
     val `open`: List<DetailAdBean>,
+    @SerializedName("tana")
+    val addInt: List<DetailAdBean>,
+    @SerializedName("zuibbt")
+    val connectInt: List<DetailAdBean>,
+    @SerializedName("ruten")
+    val backInt: List<DetailAdBean>,
     val ccc: Int,
     val sss: Int
 )
@@ -20,7 +20,7 @@ data class FieryAdBean(
 @Keep
 data class DetailAdBean(
     val lv_fiery: String,
-    val type_fiery: String,
-    val unit_fiery: String,
-    val where_fiery: String
+    val te_fiery: String,
+    val u_fiery: String,
+    val w_fiery: String
 )

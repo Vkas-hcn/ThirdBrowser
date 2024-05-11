@@ -1,34 +1,34 @@
 {
-  "open_open": [
+  "koper": [
     {
       "lv_fiery": "1",
-      "unit_fiery": "ca-app-pub-3940256099942544/9257395921",
-      "where_fiery": "open",
-      "type_fiery": "open"
+      "u_fiery": "ca-app-pub-3940256099942544/9257395921",
+      "w_fiery": "open",
+      "te_fiery": "open"
     }
   ],
-  "add_int": [
+  "tana": [
     {
       "lv_fiery": "1",
-      "unit_fiery": "ca-app-pub-3940256099942544/8691691433",
-      "where_fiery": "addInt",
-      "type_fiery": "interstitial"
+      "u_fiery": "ca-app-pub-3940256099942544/8691691433",
+      "w_fiery": "addInt",
+      "te_fiery": "interstitial"
     }
   ],
-  "connect_int": [
+  "zuibbt": [
     {
       "lv_fiery": "1",
-      "unit_fiery": "ca-app-pub-3940256099942544/1033173712",
-      "where_fiery": "connectInt",
-      "type_fiery": "interstitial"
+      "u_fiery": "ca-app-pub-3940256099942544/1033173712",
+      "w_fiery": "connectInt",
+      "te_fiery": "interstitial"
     }
   ],
-  "back_int": [
+  "ruten": [
     {
       "lv_fiery": "1",
-      "unit_fiery": "ca-app-pub-3940256099942544/1033173712",
-      "where_fiery": "backInt",
-      "type_fiery": "Interstitial"
+      "u_fiery": "ca-app-pub-3940256099942544/1033173712",
+      "w_fiery": "backInt",
+      "te_fiery": "Interstitial"
     }
   ],
   "ccc": 5,

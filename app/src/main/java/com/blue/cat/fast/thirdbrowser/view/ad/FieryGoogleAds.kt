@@ -67,12 +67,12 @@ class FieryGoogleAds(private val where: String) {
     ) {
 
         val requestContext = context.applicationContext
-        when (unit.where_fiery) {
+        when (unit.w_fiery) {
             BrowserKey.Fiery_OPEN -> {
 
                 AppOpenAd.load(
                     requestContext,
-                    unit.unit_fiery,
+                    unit.u_fiery,
                     AdRequest.Builder().build(),
                     AppOpenAd.APP_OPEN_AD_ORIENTATION_PORTRAIT,
                     object :
@@ -92,7 +92,7 @@ class FieryGoogleAds(private val where: String) {
 
                 InterstitialAd.load(
                     requestContext,
-                    unit.unit_fiery,
+                    unit.u_fiery,
                     AdRequest.Builder().build(),
                     object : InterstitialAdLoadCallback() {
                         override fun onAdFailedToLoad(loadAdError: LoadAdError) {
