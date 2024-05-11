@@ -12,6 +12,7 @@ import java.util.Date
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
+import android.util.Base64
 import android.util.Log
 import com.blue.cat.fast.thirdbrowser.App
 import com.blue.cat.fast.thirdbrowser.R
@@ -254,9 +255,12 @@ object BVDataUtils {
 
     fun getAdJson(): FieryAdBean {
         val dataJson = BrowserKey.fileBase_ad_data.let {
-            it.ifEmpty {
+            if(it.isNotEmpty()){
+                decodeBase64(it)
+            }else{
                 BrowserKey.loadJSONFromAsset(App.instance, BrowserKey.fiery_ad_data)
             }
+
         }
         return try {
             Gson().fromJson(dataJson, object : TypeToken<FieryAdBean>() {}.type)
@@ -270,7 +274,9 @@ object BVDataUtils {
 
     private fun getCoffeJson(): CoffeBean {
         val dataJson = BrowserKey.fileBase_coffe_data.let {
-            it.ifEmpty {
+            if(it.isNotEmpty()){
+                decodeBase64(it)
+            }else{
                 BrowserKey.loadJSONFromAsset(App.instance, BrowserKey.coffe)
             }
         }
@@ -351,5 +357,8 @@ object BVDataUtils {
             }
         }
         Log.e("TAG", "getAroundFlowJsonData-rLOr: ${BrowserKey.rl_data_fiery}")
+    }
+    fun decodeBase64(str: String): String {
+        return String(Base64.decode(str, Base64.DEFAULT))
     }
 }
