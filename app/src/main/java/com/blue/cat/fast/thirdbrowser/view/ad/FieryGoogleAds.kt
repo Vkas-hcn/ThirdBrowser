@@ -19,7 +19,7 @@ import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
- class FieryGoogleAds(private val where: String) {
+class FieryGoogleAds(private val where: String) {
     private class GoogleFullScreenCallback(
         private val where: String,
         private val callback: () -> Unit

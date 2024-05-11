@@ -22,7 +22,7 @@ import kotlinx.coroutines.launch
 import java.util.UUID
 
 class App : Application() {
-    var currentTime :Long = 0
+    var currentTime: Long = 0
 
     companion object {
         val TAG = "Fiery"
@@ -31,6 +31,7 @@ class App : Application() {
         var viewModel: TimerViewModel? = null
         var wentToBackgroundTime: Long = 0
         var isAppInBackground = false
+        var isHotLaund = false
         val mmkvFiery by lazy {
             MMKV.mmkvWithID("fiery", MMKV.MULTI_PROCESS_MODE)
         }
@@ -39,6 +40,7 @@ class App : Application() {
             return activityReferences.contains(activityName)
         }
     }
+
     var ad_activity_smart: Activity? = null
     var top_activity_smart: Activity? = null
     override fun onCreate() {
@@ -50,13 +52,14 @@ class App : Application() {
         FirebaseApp.initializeApp(this)
         registerActivityLifecycleCallbacks(AppLifecycleTracker())
         BrowserKey.isAppGreenSameDayGreen()
-        if(BrowserKey.uuid_browser.isEmpty()){
+        if (BrowserKey.uuid_browser.isEmpty()) {
             BrowserKey.uuid_browser = UUID.randomUUID().toString()
         }
         Core.stopService()
         BrowserKey.vpnState = -1
         BrowserKey.vpnClickState = -1
     }
+
     private inner class AppLifecycleTracker : ActivityLifecycleCallbacks {
         private var runningActivities = 0
 
@@ -64,9 +67,12 @@ class App : Application() {
             runningActivities++
             if (isAppInBackground && runningActivities > 0) {
                 isAppInBackground = false
-                 currentTime = System.currentTimeMillis()
+                currentTime = System.currentTimeMillis()
                 if (currentTime - wentToBackgroundTime > 3000) {
+                    isHotLaund = true
                     ad_activity_smart?.finish()
+                    Log.e("TAG", "showAddAd-app: ${App.isHotLaund}")
+
                     if (top_activity_smart is GuideActivity) {
                         top_activity_smart?.finish()
                     }
@@ -93,11 +99,13 @@ class App : Application() {
                 ad_activity_smart = activity
             }
         }
+
         override fun onActivityResumed(activity: Activity) {
             if (activity !is AdActivity) {
                 top_activity_smart = activity
             }
         }
+
         override fun onActivityPaused(activity: Activity) {}
         override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
         override fun onActivityDestroyed(activity: Activity) {

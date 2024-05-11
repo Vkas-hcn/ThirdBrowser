@@ -331,6 +331,13 @@ class VpnActivity : AppCompatActivity(),
 
     override fun onResume() {
         super.onResume()
+        lifecycleScope.launch {
+            delay(300)
+            if(lifecycle.currentState == Lifecycle.State.RESUMED){
+                Log.e("TAG", "showAddAd-onResume:", )
+                App.isHotLaund = false
+            }
+        }
     }
 
     override fun onDestroy() {
@@ -467,8 +474,8 @@ class VpnActivity : AppCompatActivity(),
             res = addAdData,
             preload = true,
             onShowCompleted = {
-                Log.e("TAG", "showAddAd-vpn: ${lifecycle.currentState}", )
-                if (lifecycle.currentState == Lifecycle.State.RESUMED || lifecycle.currentState == Lifecycle.State.STARTED) {
+                Log.e("TAG", "showAddAd-vpn: ${App.isHotLaund}")
+                if (App.isHotLaund.not()) {
                     lifecycleScope.launch(Dispatchers.Main) {
                         disOrConnectFun()
                     }
