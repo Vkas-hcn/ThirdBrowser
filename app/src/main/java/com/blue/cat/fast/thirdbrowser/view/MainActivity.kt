@@ -286,14 +286,16 @@ class MainActivity : AppCompatActivity() {
         editText.text?.clear()
         BVDataUtils.closeKeyboard(editText, this)
     }
-
+    var searchText =""
+    var edtSearch:EditText?=null
     private fun initEditText() {
         binding.edtSearch.setOnEditorActionListener { v, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_DONE ||
                 (event != null && event.keyCode == KeyEvent.KEYCODE_ENTER)
             ) {
-                val searchText = binding.edtSearch.text.toString().trim()
+                 searchText = binding.edtSearch.text.toString().trim()
                 if (searchText.isNotEmpty()) {
+                    edtSearch = binding.edtSearch
                     Log.e("TAG", "initEditText: 1")
                     isSearch = true
                     BrowserKey.serachNum = BrowserKey.serachNum + 1
@@ -309,8 +311,9 @@ class MainActivity : AppCompatActivity() {
 
         binding.edtSearchWeb.setOnKeyListener { v, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN) {
-                val searchText = binding.edtSearchWeb.text.toString().trim()
+                 searchText = binding.edtSearchWeb.text.toString().trim()
                 if (searchText.isNotEmpty()) {
+                    edtSearch = binding.edtSearchWeb
                     Log.e("TAG", "initEditText: 2")
                     isSearch = true
                     BrowserKey.serachNum = BrowserKey.serachNum + 1
@@ -398,6 +401,9 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             } finally {
+                if(!isActive){
+                    return@launch
+                }
                 if (isJump) {
                     binding.haveLoading = false
                     nextFun()
@@ -415,7 +421,12 @@ class MainActivity : AppCompatActivity() {
             onShowCompleted = {
                 lifecycleScope.launch(Dispatchers.Main) {
                     binding.haveLoading = false
-                    addMark()
+                    if (isSearch) {
+                        enterSearch(searchText, edtSearch!!)
+                    }else{
+                        addMark()
+
+                    }
                 }
             }
         )
