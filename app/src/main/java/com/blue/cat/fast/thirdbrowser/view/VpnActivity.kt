@@ -467,7 +467,8 @@ class VpnActivity : AppCompatActivity(),
             res = addAdData,
             preload = true,
             onShowCompleted = {
-                if (lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
+                Log.e("TAG", "showAddAd-vpn: ${lifecycle.currentState}", )
+                if (lifecycle.currentState == Lifecycle.State.RESUMED || lifecycle.currentState == Lifecycle.State.STARTED) {
                     lifecycleScope.launch(Dispatchers.Main) {
                         disOrConnectFun()
                     }
