@@ -27,7 +27,7 @@ object BrowserKey {
     const val Fiery_ADD_INT = "tana"
     const val Fiery_CONNECT_INT = "zuibbt"
     const val Fiery_BACK_INT = "ruten"
-    const val online_ad_key = "online_ad_key"
+    const val online_ad_key = "kkter"
     const val online_coffe_key = "coffe"
 
     var addMarkNum = 0
